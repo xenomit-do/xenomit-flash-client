@@ -1,0 +1,4 @@
+/build/
+/runtime/
+generated/*.swf
+__pycache__/
