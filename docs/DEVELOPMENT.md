@@ -15,7 +15,7 @@ All Flash and COM calls run on the player UI thread. The pipe worker performs bo
 
 ## Starting the player
 
-### From xenomit-bot
+### From xenomit-bot-gui
 
 The normal startup path is:
 
