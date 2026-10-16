@@ -1,6 +1,6 @@
 # Xenomit Flash Client
 
-A Windows x64 C++17 host for the Flash ActiveX control. The host loads the game movie, injects the controller bridge, and exposes a local named-pipe interface to `xenomit-bot`.
+A Windows x64 C++17 host for the Flash ActiveX control. The host loads the game movie, injects the controller bridge, and exposes a local named-pipe interface to `xenomit-bot-gui`.
 
 ## Requirements
 
@@ -22,10 +22,10 @@ The optimized executable is written to `build/xenomit_flash_client.exe`; the mat
 The player host itself is Windows-only: it uses Win32, COM/ATL, MSVC's Flash type-library import, and the 64-bit Flash ActiveX runtime. On Unix, `just build` reports this platform limitation; bridge compilation remains available with `just bridge` or `just bridge-flex <sdk-path>`.
 
 
-## Run from xenomit-bot
+## Run from xenomit-bot-gui
 
 1. Build the player.
-2. Start `xenomit-bot` and select **Flash (OCX)** on the sign-in page.
+2. Start `xenomit-bot-gui` and select **Flash (OCX)** on the sign-in page.
 3. Sign in normally. The bot starts the player, sends the authenticated game bootstrap over stdin, and connects to the player's named pipe.
 
 The bot searches for `xenomit_flash_client.exe` beside its own executable, then in the sibling `xenomit-flash-client/build` directory. Set `XENOMIT_FLASH_CLIENT_EXE` to select another player executable. Set `XENOMIT_FLASH_OCX_PATH` to override the OCX; otherwise the player loads `Flash.ocx` from its own directory.
