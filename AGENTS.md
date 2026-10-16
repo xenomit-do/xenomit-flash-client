@@ -32,6 +32,13 @@ Windows x64 C++ host for runtime/Flash.ocx. Build with just build. Rebuild the A
   thread, scheduled by a tiny ENTER_FRAME ExternalInterface notification. Never
   read VM objects concurrently or patch JIT/function pointers. Native capture
   is gated by the runtime SHA and validated game class/method profile.
+- Game offsets, method fingerprints and the legacy pattern come only from
+  generated/game_offsets.h (xenomit-tooling-offset-updater). Never hand-edit
+  it or add game literals to native_state.cpp; add a spec entry instead.
+  Native mode requires the running gameclientHash FlashVar to equal
+  kGameClientHash. Discovery prefers the bridge's NativeAnchor (own object:
+  per-session nonce + ScreenManager.getInstance()); keep its three fields
+  and their order. `--native-discovery parity` must stay available.
 - Keep cached capture (`--backend cached`) available. Native hot state uses
   version 2 LiveFrame shared memory; supplementary managers/NOA and command
   dispatch retain the existing bridge. Missing/stale geometry, corrupt vectors,

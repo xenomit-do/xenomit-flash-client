@@ -1,14 +1,21 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#define _CRT_RAND_S // rand_s: RtlGenRandom-backed session nonce
 #include <windows.h>
 #include "native_state.h"
+#include "game_offsets.h"
 #include <array>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <algorithm>
 #include <vector>
 
 namespace {
+// Game slot offsets, method fingerprints and the legacy discovery pattern are
+// generated per game build by xenomit-tooling-offset-updater. Offsets below
+// that are not in `go` are Flash runtime internals pinned by kRuntimeSha256.
+namespace go = xenomit::game_offsets;
 // Exact xenomit-game-api live/layout.rs version 2 ABI.
 struct Header {
     uint32_t magic, version, seq, pad;
@@ -18,7 +25,7 @@ struct Header {
     float hero_x,hero_y,dest_x,dest_y;
     uint32_t hero_flags; int32_t faction,clan;
     uint32_t entities,strings; uint64_t navigation_revision;
-    uint32_t navigation_off,navigation_len; uint8_t reserved[24];
+    uint32_t navigation_off,navigation_len; int32_t target_id,attack_target_id,hero_speed; uint8_t reserved[12];
 };
 struct Entity {
     int32_t id; uint8_t kind,flags; uint16_t pad;
@@ -30,14 +37,12 @@ static_assert(sizeof(Header)==128 && offsetof(Header,seq)==8);
 static_assert(sizeof(Entity)==72);
 constexpr size_t Capacity=8192, MappingBytes=2*1024*1024;
 constexpr size_t Strings=128+Capacity*sizeof(Entity);
-// DarkBot BotInstaller's MainClientApplication fingerprint. Validate class
-// identities and each decoded root before using this version-specific chain.
-constexpr uint8_t Pattern[]={
-1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
-2,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,
-0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,
-0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,1,0,0,0,0,0,0,0};
+// DarkBot's MainClientApplication value fingerprint, re-emitted per build at
+// the current field offsets. Validate class identities and each decoded root.
+static_assert(sizeof(go::kAppPattern)>=8 && go::kAppPatternMask[0]==0xff && go::kAppPatternOffset%4==0);
+// NativeAnchor (bridge/DobotBridge.as) slots: the Object slot sits in the
+// pointer area before the Number area, so screen=+32, tag0=+40, tag1=+48.
+constexpr size_t AnchorScreen=32, AnchorTag0=40;
 bool copy(void* to,uintptr_t from,size_t size) {
     if(from<0x10000 || from>0x00007fffffffffffULL-size)return false;
     __try {std::memcpy(to,reinterpret_cast<void*>(from),size);return true;}
@@ -90,15 +95,15 @@ bool class_name(uintptr_t object,std::string& out) {
     return ok && name && string(name,out);
 }
 bool location(uintptr_t object,float& x,float& y) {
-    bool ok=true;auto loc=ptr(object+64,ok);
-    auto a=read<double>(loc+32,ok),b=read<double>(loc+40,ok);
+    bool ok=true;auto loc=ptr(object+go::kMapEntity_position,ok);
+    auto a=read<double>(loc+go::kPointLite_x,ok),b=read<double>(loc+go::kPointLite_y,ok);
     if(!ok || !std::isfinite(a)||!std::isfinite(b)||std::abs(a)>100000||std::abs(b)>100000)return false;
     x=static_cast<float>(a);y=static_cast<float>(b);return true;
 }
 bool bindable(uintptr_t owner,size_t offset,int32_t& value) {
     bool ok=true;auto p=ptr(owner+offset,ok);
     if(!ok||!p)return false;
-    auto d=read<double>(p+56,ok);
+    auto d=read<double>(p+go::kBindableInt_value,ok);
     if(!ok||!std::isfinite(d)||d<0||d>2147483647)return false;
     value=static_cast<int32_t>(d);return true;
 }
@@ -106,101 +111,202 @@ uint64_t unix_ms() {FILETIME t;GetSystemTimeAsFileTime(&t);ULARGE_INTEGER u;u.Lo
 }
 struct NativeState::Impl {
     HANDLE mapping=nullptr;uint8_t* bytes=nullptr;
-    uintptr_t application=0,scan=0;uint64_t retry_at=0,frame=0,revision=0;
-    uint32_t cost=0;const char* failure="native roots not discovered";
+    NativeDiscovery mode;
+    uintptr_t application=0,anchor=0,scan=0,pass_app=0;uint64_t retry_at=0,frame=0,revision=0;
+    uint64_t nonce[2]{},parity_checks=0,parity_mismatches=0;std::string nonce_text;
+    uint32_t cost=0;const char* failure="native roots not discovered";const char* root="none";
     std::vector<uint8_t> scan_buffer=std::vector<uint8_t>(1024*1024);
     std::vector<Entity> records;std::string names,last_navigation;
-    Impl() {
+    explicit Impl(NativeDiscovery discovery):mode(discovery) {
         auto name=L"Local\\xenomit_state_"+std::to_wstring(GetCurrentProcessId());
         mapping=CreateFileMappingW(INVALID_HANDLE_VALUE,nullptr,PAGE_READWRITE,0,MappingBytes,name.c_str());
         if(mapping)bytes=static_cast<uint8_t*>(MapViewOfFile(mapping,FILE_MAP_ALL_ACCESS,0,0,MappingBytes));
         records.reserve(Capacity);names.reserve(64*1024);
+        // Integers in [2^52, 2^53): exact doubles, exact in decimal and as AS3
+        // Numbers, never zero/denormal, and ~104 random bits per session.
+        for(int i=0;i<2;++i) {
+            unsigned lo=0,hi=0;rand_s(&lo);rand_s(&hi);
+            auto value=(uint64_t(1)<<52)|((uint64_t(hi)<<32|lo)&((uint64_t(1)<<52)-1));
+            auto d=static_cast<double>(value);std::memcpy(&nonce[i],&d,8);
+            nonce_text+=(i?",":"")+std::to_string(value);
+        }
     }
     ~Impl(){if(bytes)UnmapViewOfFile(bytes);if(mapping)CloseHandle(mapping);}
-    uintptr_t screen(uintptr_t app) {
-        bool ok=true;auto main=ptr(app+1344,ok),s=ptr(main+504,ok);std::string name;
-        if(!ok||!class_name(s,name)||name!="ScreenManager")return 0;
-        auto event=ptr(s+200,ok);
+    // Class identity plus the generated method fingerprints of this build.
+    uintptr_t validate_screen(uintptr_t s) {
+        bool ok=true;std::string name;
+        if(!s||!class_name(s,name)||name!="ScreenManager")return 0;
+        auto event=ptr(s+go::kScreenManager_eventManager,ok);
         if(!ok||!class_name(event,name)||name!="EventManager")return 0;
-        auto timer=ptr(ptr(s+16,ok)+0x78+34*8,ok);
-        auto getter=ptr(ptr(event+16,ok)+0x78+7*8,ok);
-        auto move=ptr(ptr(event+16,ok)+0x78+10*8,ok);
+        auto timer=ptr(ptr(s+16,ok)+0x78+go::kScreenManager_handleEnterFrame_DispId*8,ok);
+        auto getter=ptr(ptr(event+16,ok)+0x78+go::kEventManager_hero_DispId*8,ok);
+        auto move=ptr(ptr(event+16,ok)+0x78+go::kEventManager_moveHeroToCordinates_DispId*8,ok);
         auto ti=ptr(timer+16,ok),gi=ptr(getter+16,ok),mi=ptr(move+16,ok);
-        if(!ok||read<int32_t>(ti+64,ok)!=9581||read<int32_t>(gi+64,ok)!=17459||read<int32_t>(mi+64,ok)!=17461||ptr(ti+48,ok)!=ptr(gi+48,ok)||ptr(gi+48,ok)!=ptr(mi+48,ok)||!ok)return 0;
+        if(!ok||read<int32_t>(ti+64,ok)!=go::kScreenManager_handleEnterFrame_MethodId||read<int32_t>(gi+64,ok)!=go::kEventManager_hero_MethodId||read<int32_t>(mi+64,ok)!=go::kEventManager_moveHeroToCordinates_MethodId||ptr(ti+48,ok)!=ptr(gi+48,ok)||ptr(gi+48,ok)!=ptr(mi+48,ok)||!ok)return 0;
         return s;
     }
-    // Bounded discovery slices; no process-wide scan on a hot frame.
-    uintptr_t discover() {
-        if(GetTickCount64()<retry_at)return 0;
+    uintptr_t screen_from_app(uintptr_t app) {
+        bool ok=true;auto main=ptr(app+go::kMainClientApplication_main,ok),s=ptr(main+go::kMain_screenManager,ok);
+        return ok?validate_screen(s):0;
+    }
+    bool anchor_valid(uintptr_t a) {
+        bool ok=true;std::string name;
+        return class_name(a,name)&&name=="NativeAnchor"&&read<uint64_t>(a+AnchorTag0,ok)==nonce[0]&&read<uint64_t>(a+AnchorTag0+8,ok)==nonce[1]&&ok;
+    }
+    uintptr_t screen_from_anchor(uintptr_t a) {
+        bool ok=true;auto s=ptr(a+AnchorScreen,ok); // Object slot: tagged atom, masked by ptr()
+        return ok?validate_screen(s):0;
+    }
+    bool pattern_at(const uint8_t* p) {
+        for(size_t k=0;k<sizeof(go::kAppPattern);++k)if((p[k]^go::kAppPattern[k])&go::kAppPatternMask[k])return false;
+        return true;
+    }
+    bool wants_anchor() const {return mode!=NativeDiscovery::Pattern;}
+    bool wants_pattern() const {return mode!=NativeDiscovery::Anchor;}
+    bool have_roots() const {
+        switch(mode) {
+            case NativeDiscovery::Anchor: return anchor!=0;
+            case NativeDiscovery::Pattern: return application!=0;
+            case NativeDiscovery::Parity: return anchor&&application;
+            default: return anchor||application;
+        }
+    }
+    // Bounded discovery slices; no process-wide scan on a hot frame. One pass
+    // looks for both roots; Auto takes the pattern only after a full pass
+    // without the anchor.
+    bool discover() {
+        if(GetTickCount64()<retry_at)return false;
         for(int work=0;work<4;++work) {
             MEMORY_BASIC_INFORMATION mbi{};
-            if(!VirtualQuery(reinterpret_cast<void*>(scan),&mbi,sizeof(mbi))) {scan=0;retry_at=GetTickCount64()+2000;return 0;}
+            if(!VirtualQuery(reinterpret_cast<void*>(scan),&mbi,sizeof(mbi))) {
+                scan=0;retry_at=GetTickCount64()+2000;
+                if(mode==NativeDiscovery::Auto&&!anchor&&pass_app)application=pass_app;
+                pass_app=0;return have_roots();
+            }
             auto end=reinterpret_cast<uintptr_t>(mbi.BaseAddress)+mbi.RegionSize;
             if(mbi.State!=MEM_COMMIT || (mbi.Protect&(PAGE_GUARD|PAGE_NOACCESS)) || !(mbi.Protect&0xee)) {scan=end;continue;}
             auto amount=std::min(scan_buffer.size(),static_cast<size_t>(end-scan));
             if(copy(scan_buffer.data(),scan,amount)) {
-                for(size_t i=0;i+sizeof(Pattern)<=amount;i+=4) {
-                    if(scan_buffer[i]!=1||std::memcmp(scan_buffer.data()+i,Pattern,sizeof(Pattern)))continue;
-                    auto app=scan+i-228;auto s=screen(app);
-                    if(s) {application=app;return s;}
+                const auto* buf=scan_buffer.data();
+                for(size_t i=0;i+16<=amount;i+=4) {
+                    if(wants_anchor()&&!anchor&&!(i&7)&&std::memcmp(buf+i,&nonce[0],8)==0&&std::memcmp(buf+i+8,&nonce[1],8)==0) {
+                        auto a=scan+i-AnchorTag0;
+                        if(anchor_valid(a))anchor=a;
+                    }
+                    if(wants_pattern()&&!application&&!pass_app&&buf[i]==go::kAppPattern[0]&&i+sizeof(go::kAppPattern)<=amount&&pattern_at(buf+i)) {
+                        auto app=scan+i-go::kAppPatternOffset;
+                        if(screen_from_app(app))pass_app=app;
+                    }
                 }
             }
-            scan+=amount;if(scan<end)scan-=sizeof(Pattern); // preserve boundary matches
+            if(pass_app&&mode!=NativeDiscovery::Auto){application=pass_app;pass_app=0;}
+            scan+=amount;if(scan<end)scan-=sizeof(go::kAppPattern); // preserve boundary matches
+            if(mode==NativeDiscovery::Auto?anchor!=0:have_roots()){scan=0;pass_app=0;return true;}
         }
-        return 0;
+        return false;
+    }
+    // ScreenManager for this frame, or 0. A valid anchor that merely lacks a
+    // ScreenManager (login screen, relogin) fails the frame without a rescan.
+    uintptr_t screen() {
+        if(anchor&&!anchor_valid(anchor))anchor=0;
+        if(application&&!screen_from_app(application))application=0;
+        if(!have_roots()) {
+            root="none";
+            if(!discover()){failure="native roots not discovered";return 0;}
+        }
+        uintptr_t s=0;
+        if(anchor){s=screen_from_anchor(anchor);root="anchor";if(!s){failure="native anchor has no valid ScreenManager yet";return 0;}}
+        else {s=screen_from_app(application);root="pattern";if(!s){application=0;failure="native roots not discovered";return 0;}}
+        if(mode==NativeDiscovery::Parity) {
+            auto legacy=screen_from_app(application);++parity_checks;
+            if(legacy!=s) {
+                ++parity_mismatches;
+                std::fprintf(stderr,"Native discovery parity mismatch: anchor=%p pattern=%p\n",reinterpret_cast<void*>(s),reinterpret_cast<void*>(legacy));
+                failure="native discovery parity mismatch";return 0;
+            }
+        }
+        return s;
     }
     bool capture(const std::string& nav,uint64_t at) {
         if(!bytes){failure="shared memory allocation failed";return false;}
         LARGE_INTEGER start,finish,freq;QueryPerformanceFrequency(&freq);QueryPerformanceCounter(&start);
-        auto s=application?screen(application):discover();
-        if(!s){application=0;failure="native roots not discovered";return false;}
-        bool ok=true;auto map=ptr(s+256,ok),hero=ptr(s+240,ok);std::string cls;
-        Header h{};h.magic=0x4d545358;h.version=2;h.map_id=read<int32_t>(map+84,ok);
-        auto width=read<int32_t>(map+76,ok),height=read<int32_t>(map+80,ok);
+        auto s=screen();
+        if(!s)return false;
+        bool ok=true;auto map=ptr(s+go::kScreenManager_map,ok),hero=ptr(s+go::kScreenManager_hero,ok);std::string cls;
+        Header h{};h.magic=0x4d545358;h.version=2;h.map_id=read<int32_t>(map+go::kMap_id,ok);
+        auto width=read<int32_t>(map+go::kMap_width,ok),height=read<int32_t>(map+go::kMap_height,ok);
         h.width=static_cast<float>(width);h.height=static_cast<float>(height);
-        h.hero_id=read<int32_t>(hero+56,ok);
+        h.hero_id=read<int32_t>(hero+go::kMapEntity_id,ok);
         if(!ok||!class_name(map,cls)||cls!="Map"||!class_name(hero,cls)||cls!="Ship"||h.map_id<1||width<100||height<100||width>100000||height>100000||h.hero_id<=0||!location(hero,h.hero_x,h.hero_y)) {failure="native root validation failed";return false;}
         // Supplementary managers/NOA come from the existing slower bridge.
         // Never pair fresh positions with stale geometry or another map.
         const auto mapKey="\"map_id\":"+std::to_string(h.map_id);
         auto pos=nav.find(mapKey);
         if(!at||GetTickCount64()-at>750||pos==std::string::npos||(pos+mapKey.size()<nav.size()&&nav[pos+mapKey.size()]!=','&&nav[pos+mapKey.size()]!='}')) {failure="native navigation unavailable or stale";return false;}
-        auto v=ptr(map+40,ok),table=ptr(v+48,ok);auto count=read<uint32_t>(v+56,ok);
+        auto v=ptr(map+go::kMap_entities,ok),table=ptr(v+48,ok);auto count=read<uint32_t>(v+56,ok);
         if(!ok||count>Capacity){failure="native entity vector rejected";return false;}
         records.clear();names.clear();h.hero_flags=1;
+        // Selected entity: Map._lockManager._target, set on click. A null lock
+        // or unreadable chain reports "no target"; the flag marks it as valid.
+        {
+            bool tok=true;auto lock=ptr(map+go::kMap_lockManager,tok);
+            auto sel=lock?ptr(lock+go::kLockManager_target,tok):0;
+            int32_t tid=0;
+            if(tok&&sel){bool iok=true;auto id=read<int32_t>(sel+go::kMapEntity_id,iok);if(iok&&id>0)tid=id;}
+            if(tok){h.target_id=tid;h.hero_flags|=4;}
+        }
         for(uint32_t i=0;i<count;++i) {
-            auto e=ptr(table+16+i*8,ok);Entity r{};r.id=read<int32_t>(e+56,ok);
-            if(!ok||ptr(e+96,ok)!=map||!location(e,r.x,r.y)||!class_name(e,cls)){failure="native entity validation failed";return false;}
+            auto e=ptr(table+16+i*8,ok);Entity r{};r.id=read<int32_t>(e+go::kMapEntity_id,ok);
+            if(!ok||ptr(e+go::kMapEntity_container,ok)!=map||!location(e,r.x,r.y)||!class_name(e,cls)){failure="native entity validation failed";return false;}
             std::string name;
             bool ship=cls=="Ship"||cls=="Pet";
             if(ship) {
-                auto npc=read<int32_t>(e+112,ok);
+                auto npc=read<int32_t>(e+go::kShip_isNpc,ok);
                 if(npc!=0&&npc!=1){failure="native ship layout rejected";return false;}
                 r.kind=cls=="Pet"?4:npc?3:2;r.flags=npc?1:0;
-                auto health=ptr(e+184,ok);
+                auto health=ptr(e+go::kShip_hpTrait,ok);
                 if(health) {
-                    if(!bindable(health,48,r.hp)||!bindable(health,56,r.max_hp)||!bindable(health,64,r.shield)||!bindable(health,72,r.max_shield)||!bindable(health,80,r.nano)||!bindable(health,88,r.max_nano)){failure="native health layout rejected";return false;}
+                    if(!bindable(health,go::kHPTrait_hp,r.hp)||!bindable(health,go::kHPTrait_maxHp,r.max_hp)||!bindable(health,go::kHPTrait_shield,r.shield)||!bindable(health,go::kHPTrait_maxShield,r.max_shield)||!bindable(health,go::kHPTrait_nanohullHp,r.nano)||!bindable(health,go::kHPTrait_nanohullMaxHp,r.max_nano)){failure="native health layout rejected";return false;}
                     r.flags|=8;
                 }
-                auto player=ptr(e+248,ok);
+                auto player=ptr(e+go::kShip_info,ok);
                 if(player) {
-                    bindable(player,40,r.clan);bindable(player,48,r.diplomacy);bindable(player,72,r.faction);
-                    auto ns=ptr(player+64,ok);if(ns&&!string(ptr(ns+40,ok),name)){failure="native username rejected";return false;}
+                    bindable(player,go::kInfoTrait_clanId,r.clan);bindable(player,go::kInfoTrait_clanDiplomacy,r.diplomacy);bindable(player,go::kInfoTrait_factionId,r.faction);
+                    auto ns=ptr(player+go::kInfoTrait_username,ok);if(ns&&!string(ptr(ns+go::kBindableString_value,ok),name)){failure="native username rejected";return false;}
                 }
-                auto move=ptr(e+232,ok),dest=move?ptr(move+104,ok):0;
+                auto move=ptr(e+go::kShip_moveTrait,ok),dest=move?ptr(move+go::kMoveTrait_destination,ok):0;
                 if(dest) {
-                    auto dx=read<double>(dest+32,ok),dy=read<double>(dest+40,ok);
+                    auto dx=read<double>(dest+go::kPointLite_x,ok),dy=read<double>(dest+go::kPointLite_y,ok);
                     if(!std::isfinite(dx)||!std::isfinite(dy)||std::abs(dx)>100000||std::abs(dy)>100000){failure="native destination rejected";return false;}
                     r.dx=static_cast<float>(dx);r.dy=static_cast<float>(dy);
                     if(std::abs(r.dx-r.x)>1||std::abs(r.dy-r.y)>1)r.flags|=4;
                 }
-            } else if(cls=="Portal") {r.kind=7;r.flags|=16;r.type=read<int32_t>(e+120,ok);}
-            else if(cls=="Box"||cls=="Ore") {r.kind=cls=="Box"?5:6;r.flags|=32;if(!string(ptr(e+160,ok),name)){failure="native collectable hash rejected";return false;}}
+            } else if(cls=="Portal") {r.kind=7;r.flags|=16;r.type=read<int32_t>(e+go::kPortal_designId,ok);}
+            else if(cls=="Box"||cls=="Ore") {r.kind=cls=="Box"?5:6;r.flags|=32;if(!string(ptr(e+go::kCollectable_hash,ok),name)){failure="native collectable hash rejected";return false;}}
             else if(cls=="Station")r.kind=9;
             else if(cls=="Headquarters"||cls=="Hangar"||cls=="RepairStation"||cls=="Refinery"||cls=="QuestGiver"||cls=="HomeBaseLaserTurret")r.kind=8;
             else if(cls=="Mine")r.kind=11;
             else if(cls=="Beacon")r.kind=10;
             if(!ok){failure="native pointer read failed";return false;}
+            if(e==hero) {
+                // Hot hero state, read natively on every frame: current attack
+                // target (AttackerTrait in the traits vector) and move speed.
+                bool hok=true;auto traits=ptr(hero+go::kEntityTraitContainer_traits,hok);
+                auto ttable=traits?ptr(traits+48,hok):0;auto tcount=traits?read<uint32_t>(traits+56,hok):0;
+                if(hok&&ttable&&tcount<=64) {
+                    int32_t attack=0;std::string tn;
+                    for(uint32_t t=0;t<tcount;++t) {
+                        bool tok=true;auto trait=ptr(ttable+16+t*8,tok);
+                        if(!tok||!trait||!class_name(trait,tn)||tn!="AttackerTrait")continue;
+                        auto owner=ptr(trait+go::kAttackerTrait_targetOwner,tok);
+                        if(tok&&owner){auto id=read<int32_t>(owner+go::kMapEntity_id,tok);if(tok&&id>0)attack=id;}
+                        if(tok){h.attack_target_id=attack;h.hero_flags|=8;}
+                        break;
+                    }
+                }
+                bool sok=true;auto mt=ptr(hero+go::kShip_moveTrait,sok);int32_t sp=0;
+                if(sok&&mt&&bindable(mt,go::kMoveTrait_speed,sp)){h.hero_speed=sp;h.hero_flags|=16;}
+            }
             if(e==hero){r.kind=1;r.flags|=2;h.faction=r.faction;h.clan=r.clan;h.dest_x=r.dx;h.dest_y=r.dy;if(r.flags&4)h.hero_flags|=2;}
             r.name_off=static_cast<uint32_t>(names.size());r.name_len=static_cast<uint32_t>(name.size());names+=name;records.push_back(r);
         }
@@ -219,7 +325,7 @@ struct NativeState::Impl {
         MemoryBarrier();InterlockedIncrement(seq);failure="";return true;
     }
 };
-NativeState::NativeState():impl_(std::make_unique<Impl>()){}
+NativeState::NativeState(NativeDiscovery discovery):impl_(std::make_unique<Impl>(discovery)){}
 NativeState::~NativeState()=default;
 void NativeState::invalidate(){
     if(!impl_->bytes)return;
@@ -231,3 +337,7 @@ void NativeState::invalidate(){
 bool NativeState::capture(const std::string& n,uint64_t at){return impl_->capture(n,at);}
 uint32_t NativeState::capture_us()const{return impl_->cost;}
 const char* NativeState::error()const{return impl_->failure;}
+const std::string& NativeState::anchor_nonce()const{return impl_->nonce_text;}
+const char* NativeState::root()const{return impl_->root;}
+uint64_t NativeState::parity_checks()const{return impl_->parity_checks;}
+uint64_t NativeState::parity_mismatches()const{return impl_->parity_mismatches;}

@@ -1,0 +1,3981 @@
+{
+  "schema": 1,
+  "game_client_hash": "0628dac77216e0ba829fb340c399ae00",
+  "swf_sha256": "688499ddc51f235e30fb5d49f4e067bf952b1bdc55908d2a4cb8ab6f00aad8bb",
+  "runtime_sha256": "B0475512D5AD449DFA7D21B5A2645CB1711D2CE98B42C9FE000B5FBC0F8231BD",
+  "slots": [
+    {
+      "name": "MainClientApplication_main",
+      "offset": 1344,
+      "field": "MainClientApplication._3343801main",
+      "type": "net.bigpoint.darkorbit::Main"
+    },
+    {
+      "name": "Main_screenManager",
+      "offset": 504,
+      "field": "Main.screenManager",
+      "type": "net.bigpoint.darkorbit.managers::ScreenManager"
+    },
+    {
+      "name": "ScreenManager_eventManager",
+      "offset": 200,
+      "field": "ScreenManager._eventManager",
+      "type": "net.bigpoint.darkorbit.managers::EventManager"
+    },
+    {
+      "name": "ScreenManager_hero",
+      "offset": 240,
+      "field": "ScreenManager._hero",
+      "type": "net.bigpoint.darkorbit.map.model.ship::Ship"
+    },
+    {
+      "name": "ScreenManager_map",
+      "offset": 256,
+      "field": "ScreenManager._map",
+      "type": "net.bigpoint.darkorbit.map.model::Map"
+    },
+    {
+      "name": "Map_entities",
+      "offset": 40,
+      "field": "MapEntityContainer._entities",
+      "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::MapEntity>"
+    },
+    {
+      "name": "Map_width",
+      "offset": 76,
+      "field": "Map._serious_width",
+      "type": "int"
+    },
+    {
+      "name": "Map_height",
+      "offset": 80,
+      "field": "Map._serious_height",
+      "type": "int"
+    },
+    {
+      "name": "Map_id",
+      "offset": 84,
+      "field": "Map._mapID",
+      "type": "int"
+    },
+    {
+      "name": "Map_lockManager",
+      "offset": 128,
+      "field": "Map._lockManager",
+      "type": "net.bigpoint.darkorbit.map.model.utils::LockManager"
+    },
+    {
+      "name": "LockManager_target",
+      "offset": 40,
+      "field": "LockManager._target",
+      "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+    },
+    {
+      "name": "EntityTraitContainer_traits",
+      "offset": 48,
+      "field": "EntityTraitContainer._traits",
+      "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+    },
+    {
+      "name": "AttackerTrait_targetOwner",
+      "offset": 72,
+      "field": "AttackerTrait._targetOwner",
+      "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+    },
+    {
+      "name": "MoveTrait_speed",
+      "offset": 80,
+      "field": "MoveTrait.speed",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "MapEntity_id",
+      "offset": 56,
+      "field": "MapEntity._id",
+      "type": "int"
+    },
+    {
+      "name": "MapEntity_position",
+      "offset": 64,
+      "field": "MapEntity._position",
+      "type": "com.bigpoint.utils.bindables::BindablePointLite"
+    },
+    {
+      "name": "MapEntity_container",
+      "offset": 96,
+      "field": "MapEntity._container",
+      "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+    },
+    {
+      "name": "PointLite_x",
+      "offset": 32,
+      "field": "PointLite._x",
+      "type": "Number"
+    },
+    {
+      "name": "PointLite_y",
+      "offset": 40,
+      "field": "PointLite._y",
+      "type": "Number"
+    },
+    {
+      "name": "Ship_isNpc",
+      "offset": 112,
+      "field": "Ship._isNPC",
+      "type": "Boolean"
+    },
+    {
+      "name": "Ship_hpTrait",
+      "offset": 192,
+      "field": "Ship._hpTrait",
+      "type": "net.bigpoint.darkorbit.map.model.traits::HPTrait"
+    },
+    {
+      "name": "Ship_moveTrait",
+      "offset": 240,
+      "field": "Ship._moveTrait",
+      "type": "net.bigpoint.darkorbit.map.model.traits::MoveTrait"
+    },
+    {
+      "name": "Ship_info",
+      "offset": 256,
+      "field": "Ship._info",
+      "type": "net.bigpoint.darkorbit.map.model.traits.hud::MapObjectInfoTrait"
+    },
+    {
+      "name": "Portal_designId",
+      "offset": 120,
+      "field": "Portal._designId",
+      "type": "int"
+    },
+    {
+      "name": "Collectable_hash",
+      "offset": 160,
+      "field": "Collectable._hash",
+      "type": "String"
+    },
+    {
+      "name": "HPTrait_hp",
+      "offset": 48,
+      "field": "HPTrait.hp",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "HPTrait_maxHp",
+      "offset": 56,
+      "field": "HPTrait.maxHP",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "HPTrait_nanohullHp",
+      "offset": 64,
+      "field": "HPTrait.nanohullHP",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "HPTrait_nanohullMaxHp",
+      "offset": 72,
+      "field": "HPTrait.nanohullMaxHP",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "HPTrait_shield",
+      "offset": 80,
+      "field": "HPTrait.shield",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "HPTrait_maxShield",
+      "offset": 88,
+      "field": "HPTrait.maxShield",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "BindableInt_value",
+      "offset": 56,
+      "field": "BindableInt._value",
+      "type": "Number"
+    },
+    {
+      "name": "BindableString_value",
+      "offset": 40,
+      "field": "BindableString._value",
+      "type": "String"
+    },
+    {
+      "name": "InfoTrait_clanId",
+      "offset": 40,
+      "field": "MapObjectInfoTrait.clanID",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "InfoTrait_clanDiplomacy",
+      "offset": 48,
+      "field": "MapObjectInfoTrait.clanDiplomacy",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "InfoTrait_username",
+      "offset": 64,
+      "field": "MapObjectInfoTrait.username",
+      "type": "com.bigpoint.utils.bindables::BindableString"
+    },
+    {
+      "name": "InfoTrait_factionId",
+      "offset": 72,
+      "field": "MapObjectInfoTrait.factionID",
+      "type": "com.bigpoint.utils.bindables::BindableInt"
+    },
+    {
+      "name": "MoveTrait_destination",
+      "offset": 104,
+      "field": "MoveTrait._destination",
+      "type": "com.bigpoint.utils::PointLite"
+    }
+  ],
+  "methods": [
+    {
+      "name": "ScreenManager_handleEnterFrame",
+      "method": "ScreenManager.handleEnterFrame",
+      "method_id": 9581,
+      "disp_id": 34,
+      "abc": 1
+    },
+    {
+      "name": "EventManager_hero",
+      "method": "EventManager.hero",
+      "method_id": 17461,
+      "disp_id": 7,
+      "abc": 1
+    },
+    {
+      "name": "EventManager_moveHeroToCordinates",
+      "method": "EventManager.moveHeroToCordinates",
+      "method_id": 17463,
+      "disp_id": 10,
+      "abc": 1
+    }
+  ],
+  "pattern": {
+    "name": "AppPattern",
+    "offset": 228,
+    "bytes": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "mask": [
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255,
+      255
+    ],
+    "fields": [
+      [
+        "UIComponent._visible",
+        228
+      ],
+      [
+        "UIComponent.blendShaderChanged",
+        232
+      ],
+      [
+        "UIComponent.blendModeChanged",
+        236
+      ],
+      [
+        "UIComponent._enabled",
+        240
+      ],
+      [
+        "UIComponent._systemManagerDirty",
+        244
+      ],
+      [
+        "UIComponent._nestLevel",
+        248
+      ],
+      [
+        "UIComponent.cacheAsBitmapCount",
+        252
+      ],
+      [
+        "UIComponent._focusEnabled",
+        256
+      ],
+      [
+        "UIComponent._hasFocusableChildren",
+        260
+      ],
+      [
+        "UIComponent._mouseFocusEnabled",
+        264
+      ],
+      [
+        "UIComponent._tabFocusEnabled",
+        268
+      ],
+      [
+        "UIComponent._hasComplexLayoutMatrix",
+        272
+      ],
+      [
+        "UIComponent._includeInLayout",
+        276
+      ],
+      [
+        "UIComponent.playStateTransition",
+        280
+      ],
+      [
+        "UIComponent._currentStateChanged",
+        284
+      ],
+      [
+        "UIComponent._isPopUp",
+        288
+      ],
+      [
+        "UIComponent._showInAutomationHierarchy",
+        292
+      ],
+      [
+        "UIComponent.errorStringChanged",
+        296
+      ],
+      [
+        "UIComponent._isEffectStarted",
+        300
+      ],
+      [
+        "UIComponent.preventDrawFocus",
+        304
+      ],
+      [
+        "UIComponent._maintainProjectionCenter",
+        308
+      ],
+      [
+        "UIComponent.deferredSetStyles",
+        312
+      ]
+    ]
+  },
+  "watched": {
+    "com.bigpoint.utils.bindables::BindableInt": {
+      "chain": [
+        "com.bigpoint.utils.bindables::BindableInt",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "changed",
+          "owner": "BindableInt",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "minValue",
+          "owner": "BindableInt",
+          "offset": 40,
+          "type": "Number"
+        },
+        {
+          "name": "maxValue",
+          "owner": "BindableInt",
+          "offset": 48,
+          "type": "Number"
+        },
+        {
+          "name": "_value",
+          "owner": "BindableInt",
+          "offset": 56,
+          "type": "Number"
+        }
+      ]
+    },
+    "com.bigpoint.utils.bindables::BindablePointLite": {
+      "chain": [
+        "com.bigpoint.utils.bindables::BindablePointLite",
+        "com.bigpoint.utils::PointLite",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "_x",
+          "owner": "PointLite",
+          "offset": 32,
+          "type": "Number"
+        },
+        {
+          "name": "_y",
+          "owner": "PointLite",
+          "offset": 40,
+          "type": "Number"
+        },
+        {
+          "name": "_z",
+          "owner": "PointLite",
+          "offset": 48,
+          "type": "Number"
+        },
+        {
+          "name": "changed",
+          "owner": "BindablePointLite",
+          "offset": 56,
+          "type": "org.osflash.signals::ISignal"
+        }
+      ]
+    },
+    "com.bigpoint.utils.bindables::BindableString": {
+      "chain": [
+        "com.bigpoint.utils.bindables::BindableString",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "changed",
+          "owner": "BindableString",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_value",
+          "owner": "BindableString",
+          "offset": 40,
+          "type": "String"
+        }
+      ]
+    },
+    "com.bigpoint.utils::PointLite": {
+      "chain": [
+        "com.bigpoint.utils::PointLite",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "_x",
+          "owner": "PointLite",
+          "offset": 32,
+          "type": "Number"
+        },
+        {
+          "name": "_y",
+          "owner": "PointLite",
+          "offset": 40,
+          "type": "Number"
+        },
+        {
+          "name": "_z",
+          "owner": "PointLite",
+          "offset": 48,
+          "type": "Number"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.managers::EventManager": {
+      "chain": [
+        "net.bigpoint.darkorbit.managers::EventManager",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "_lockKeyboard",
+          "owner": "EventManager",
+          "offset": 32,
+          "type": "Boolean"
+        },
+        {
+          "name": "controlsLocked",
+          "owner": "EventManager",
+          "offset": 36,
+          "type": "Boolean"
+        },
+        {
+          "name": "_movementlsLocked",
+          "owner": "EventManager",
+          "offset": 40,
+          "type": "Boolean"
+        },
+        {
+          "name": "_lastMoveRequestTimer",
+          "owner": "EventManager",
+          "offset": 44,
+          "type": "int"
+        },
+        {
+          "name": "_moveRequestTimeout",
+          "owner": "EventManager",
+          "offset": 48,
+          "type": "int"
+        },
+        {
+          "name": "_clickCounter",
+          "owner": "EventManager",
+          "offset": 52,
+          "type": "int"
+        },
+        {
+          "name": "_controlsMirrored",
+          "owner": "EventManager",
+          "offset": 56,
+          "type": "Boolean"
+        },
+        {
+          "name": "_gameXY",
+          "owner": "EventManager",
+          "offset": 64,
+          "type": "com.bigpoint.utils::PointLite"
+        },
+        {
+          "name": "_groupProxy",
+          "owner": "EventManager",
+          "offset": 72,
+          "type": "net.bigpoint.darkorbit.mvc.groupsystem.model.proxy::GroupProxy"
+        },
+        {
+          "name": "_hitArea",
+          "owner": "EventManager",
+          "offset": 80,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "keyDown",
+          "owner": "EventManager",
+          "offset": 88,
+          "type": "Array"
+        },
+        {
+          "name": "gameFacade",
+          "owner": "EventManager",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.mvc.application::GameFacade"
+        },
+        {
+          "name": "keyboardMapper",
+          "owner": "EventManager",
+          "offset": 104,
+          "type": "net.bigpoint.darkorbit.managers.keyboardManager::KeyboardMapper"
+        },
+        {
+          "name": "_hitTestResolver",
+          "owner": "EventManager",
+          "offset": 112,
+          "type": "net.bigpoint.darkorbit.map.model.utils::HitTestResolver"
+        },
+        {
+          "name": "_stage",
+          "owner": "EventManager",
+          "offset": 120,
+          "type": "flash.display::Stage"
+        },
+        {
+          "name": "_trackMapClick",
+          "owner": "EventManager",
+          "offset": 128,
+          "type": "net.bigpoint.darkorbit.com.module::TrackIntVariableModule"
+        },
+        {
+          "name": "_map",
+          "owner": "EventManager",
+          "offset": 136,
+          "type": "net.bigpoint.darkorbit.map.model::Map"
+        },
+        {
+          "name": "lastDblc",
+          "owner": "EventManager",
+          "offset": 144,
+          "type": "Number"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.managers::ScreenManager": {
+      "chain": [
+        "net.bigpoint.darkorbit.managers::ScreenManager",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "_hasFocus",
+          "owner": "ScreenManager",
+          "offset": 32,
+          "type": "Boolean"
+        },
+        {
+          "name": "captainTimerId",
+          "owner": "ScreenManager",
+          "offset": 36,
+          "type": "int"
+        },
+        {
+          "name": "_resizeTimeout",
+          "owner": "ScreenManager",
+          "offset": 40,
+          "type": "int"
+        },
+        {
+          "name": "shakeTimerOn",
+          "owner": "ScreenManager",
+          "offset": 44,
+          "type": "Boolean"
+        },
+        {
+          "name": "cnt",
+          "owner": "ScreenManager",
+          "offset": 48,
+          "type": "int"
+        },
+        {
+          "name": "shakeFactor",
+          "owner": "ScreenManager",
+          "offset": 52,
+          "type": "int"
+        },
+        {
+          "name": "resized",
+          "owner": "ScreenManager",
+          "offset": 56,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_hitLayer",
+          "owner": "ScreenManager",
+          "offset": 64,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "guiLayer0",
+          "owner": "ScreenManager",
+          "offset": 72,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "guiLayer1",
+          "owner": "ScreenManager",
+          "offset": 80,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "windowLayer2",
+          "owner": "ScreenManager",
+          "offset": 88,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "popupLayer",
+          "owner": "ScreenManager",
+          "offset": 96,
+          "type": "flash.display::DisplayObjectContainer"
+        },
+        {
+          "name": "tooltipLayer",
+          "owner": "ScreenManager",
+          "offset": 104,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "mouseCursorLayer",
+          "owner": "ScreenManager",
+          "offset": 112,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "dragNdropLayer",
+          "owner": "ScreenManager",
+          "offset": 120,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "multiSelectionLayer",
+          "owner": "ScreenManager",
+          "offset": 128,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "iconLayer",
+          "owner": "ScreenManager",
+          "offset": 136,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "_topmenuLayer",
+          "owner": "ScreenManager",
+          "offset": 144,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "_mainmenuLayer",
+          "owner": "ScreenManager",
+          "offset": 152,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "flashShape",
+          "owner": "ScreenManager",
+          "offset": 160,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "gameFacade",
+          "owner": "ScreenManager",
+          "offset": 168,
+          "type": "net.bigpoint.darkorbit.mvc.application::GameFacade"
+        },
+        {
+          "name": "_nazContainer",
+          "owner": "ScreenManager",
+          "offset": 176,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "fullscreenActiveAcceptTimer",
+          "owner": "ScreenManager",
+          "offset": 184,
+          "type": "flash.utils::Timer"
+        },
+        {
+          "name": "_viewportResizeValues",
+          "owner": "ScreenManager",
+          "offset": 192,
+          "type": "net.bigpoint.darkorbit.mvc.common.model.vo::ViewportResizeValuesVO"
+        },
+        {
+          "name": "_eventManager",
+          "owner": "ScreenManager",
+          "offset": 200,
+          "type": "net.bigpoint.darkorbit.managers::EventManager"
+        },
+        {
+          "name": "_mapViewLoader",
+          "owner": "ScreenManager",
+          "offset": 208,
+          "type": "net.bigpoint.darkorbit.map::MapViewProxy"
+        },
+        {
+          "name": "_mapView",
+          "owner": "ScreenManager",
+          "offset": 216,
+          "type": "net.bigpoint.darkorbit.map::IMapView"
+        },
+        {
+          "name": "_miniMap",
+          "owner": "ScreenManager",
+          "offset": 224,
+          "type": "net.bigpoint.darkorbit.map.model.minimap::MiniMap"
+        },
+        {
+          "name": "_mainContainer",
+          "owner": "ScreenManager",
+          "offset": 232,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "_hero",
+          "owner": "ScreenManager",
+          "offset": 240,
+          "type": "net.bigpoint.darkorbit.map.model.ship::Ship"
+        },
+        {
+          "name": "_initLayersCallback",
+          "owner": "ScreenManager",
+          "offset": 248,
+          "type": "Function"
+        },
+        {
+          "name": "_map",
+          "owner": "ScreenManager",
+          "offset": 256,
+          "type": "net.bigpoint.darkorbit.map.model::Map"
+        },
+        {
+          "name": "mapChanged",
+          "owner": "ScreenManager",
+          "offset": 264,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_mapUpdatables",
+          "owner": "ScreenManager",
+          "offset": 272,
+          "type": "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer"
+        },
+        {
+          "name": "currTime",
+          "owner": "ScreenManager",
+          "offset": 280,
+          "type": "Number"
+        },
+        {
+          "name": "prevTime",
+          "owner": "ScreenManager",
+          "offset": 288,
+          "type": "Number"
+        },
+        {
+          "name": "tpf",
+          "owner": "ScreenManager",
+          "offset": 296,
+          "type": "Number"
+        },
+        {
+          "name": "shakeTime",
+          "owner": "ScreenManager",
+          "offset": 304,
+          "type": "Number"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.env.collectable::Beacon": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.env.collectable::Beacon",
+        "net.bigpoint.darkorbit.map.model.env.collectable::Collectable",
+        "net.bigpoint.darkorbit.map.model.core::MapEntity",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "traitAdded",
+          "owner": "EntityTraitContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "traitRemoved",
+          "owner": "EntityTraitContainer",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_traits",
+          "owner": "EntityTraitContainer",
+          "offset": 48,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_id",
+          "owner": "MapEntity",
+          "offset": 56,
+          "type": "int"
+        },
+        {
+          "name": "_position",
+          "owner": "MapEntity",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindablePointLite"
+        },
+        {
+          "name": "_firstTraits",
+          "owner": "MapEntity",
+          "offset": 72,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "entityActivated",
+          "owner": "MapEntity",
+          "offset": 80,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "entityDeactivated",
+          "owner": "MapEntity",
+          "offset": 88,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_container",
+          "owner": "MapEntity",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+        },
+        {
+          "name": "_pivots",
+          "owner": "MapEntity",
+          "offset": 104,
+          "type": "Object"
+        },
+        {
+          "name": "_soundId",
+          "owner": "Collectable",
+          "offset": 112,
+          "type": "int"
+        },
+        {
+          "name": "_isCollected",
+          "owner": "Collectable",
+          "offset": 116,
+          "type": "Boolean"
+        },
+        {
+          "name": "_fresh",
+          "owner": "Collectable",
+          "offset": 120,
+          "type": "Boolean"
+        },
+        {
+          "name": "clicked",
+          "owner": "Collectable",
+          "offset": 128,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "collected",
+          "owner": "Collectable",
+          "offset": 136,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_settings",
+          "owner": "Collectable",
+          "offset": 144,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "_collectableTraits",
+          "owner": "Collectable",
+          "offset": 152,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_hash",
+          "owner": "Collectable",
+          "offset": 160,
+          "type": "String"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.env.collectable::Box": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.env.collectable::Box",
+        "net.bigpoint.darkorbit.map.model.env.collectable::Collectable",
+        "net.bigpoint.darkorbit.map.model.core::MapEntity",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "traitAdded",
+          "owner": "EntityTraitContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "traitRemoved",
+          "owner": "EntityTraitContainer",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_traits",
+          "owner": "EntityTraitContainer",
+          "offset": 48,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_id",
+          "owner": "MapEntity",
+          "offset": 56,
+          "type": "int"
+        },
+        {
+          "name": "_position",
+          "owner": "MapEntity",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindablePointLite"
+        },
+        {
+          "name": "_firstTraits",
+          "owner": "MapEntity",
+          "offset": 72,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "entityActivated",
+          "owner": "MapEntity",
+          "offset": 80,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "entityDeactivated",
+          "owner": "MapEntity",
+          "offset": 88,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_container",
+          "owner": "MapEntity",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+        },
+        {
+          "name": "_pivots",
+          "owner": "MapEntity",
+          "offset": 104,
+          "type": "Object"
+        },
+        {
+          "name": "_soundId",
+          "owner": "Collectable",
+          "offset": 112,
+          "type": "int"
+        },
+        {
+          "name": "_isCollected",
+          "owner": "Collectable",
+          "offset": 116,
+          "type": "Boolean"
+        },
+        {
+          "name": "_fresh",
+          "owner": "Collectable",
+          "offset": 120,
+          "type": "Boolean"
+        },
+        {
+          "name": "clicked",
+          "owner": "Collectable",
+          "offset": 128,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "collected",
+          "owner": "Collectable",
+          "offset": 136,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_settings",
+          "owner": "Collectable",
+          "offset": 144,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "_collectableTraits",
+          "owner": "Collectable",
+          "offset": 152,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_hash",
+          "owner": "Collectable",
+          "offset": 160,
+          "type": "String"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.env.collectable::Ore": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.env.collectable::Ore",
+        "net.bigpoint.darkorbit.map.model.env.collectable::Collectable",
+        "net.bigpoint.darkorbit.map.model.core::MapEntity",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "traitAdded",
+          "owner": "EntityTraitContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "traitRemoved",
+          "owner": "EntityTraitContainer",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_traits",
+          "owner": "EntityTraitContainer",
+          "offset": 48,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_id",
+          "owner": "MapEntity",
+          "offset": 56,
+          "type": "int"
+        },
+        {
+          "name": "_position",
+          "owner": "MapEntity",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindablePointLite"
+        },
+        {
+          "name": "_firstTraits",
+          "owner": "MapEntity",
+          "offset": 72,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "entityActivated",
+          "owner": "MapEntity",
+          "offset": 80,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "entityDeactivated",
+          "owner": "MapEntity",
+          "offset": 88,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_container",
+          "owner": "MapEntity",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+        },
+        {
+          "name": "_pivots",
+          "owner": "MapEntity",
+          "offset": 104,
+          "type": "Object"
+        },
+        {
+          "name": "_soundId",
+          "owner": "Collectable",
+          "offset": 112,
+          "type": "int"
+        },
+        {
+          "name": "_isCollected",
+          "owner": "Collectable",
+          "offset": 116,
+          "type": "Boolean"
+        },
+        {
+          "name": "_fresh",
+          "owner": "Collectable",
+          "offset": 120,
+          "type": "Boolean"
+        },
+        {
+          "name": "clicked",
+          "owner": "Collectable",
+          "offset": 128,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "collected",
+          "owner": "Collectable",
+          "offset": 136,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_settings",
+          "owner": "Collectable",
+          "offset": 144,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "_collectableTraits",
+          "owner": "Collectable",
+          "offset": 152,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_hash",
+          "owner": "Collectable",
+          "offset": 160,
+          "type": "String"
+        },
+        {
+          "name": "_typeID",
+          "owner": "Ore",
+          "offset": 168,
+          "type": "int"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.env.mine::Mine": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.env.mine::Mine",
+        "net.bigpoint.darkorbit.map.model.core::MapEntity",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "traitAdded",
+          "owner": "EntityTraitContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "traitRemoved",
+          "owner": "EntityTraitContainer",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_traits",
+          "owner": "EntityTraitContainer",
+          "offset": 48,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_id",
+          "owner": "MapEntity",
+          "offset": 56,
+          "type": "int"
+        },
+        {
+          "name": "_position",
+          "owner": "MapEntity",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindablePointLite"
+        },
+        {
+          "name": "_firstTraits",
+          "owner": "MapEntity",
+          "offset": 72,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "entityActivated",
+          "owner": "MapEntity",
+          "offset": 80,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "entityDeactivated",
+          "owner": "MapEntity",
+          "offset": 88,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_container",
+          "owner": "MapEntity",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+        },
+        {
+          "name": "_pivots",
+          "owner": "MapEntity",
+          "offset": 104,
+          "type": "Object"
+        },
+        {
+          "name": "typeID",
+          "owner": "Mine",
+          "offset": 112,
+          "type": "int"
+        },
+        {
+          "name": "pulseColorId",
+          "owner": "Mine",
+          "offset": 116,
+          "type": "int"
+        },
+        {
+          "name": "explodeType",
+          "owner": "Mine",
+          "offset": 120,
+          "type": "int"
+        },
+        {
+          "name": "shockwaveColorID",
+          "owner": "Mine",
+          "offset": 124,
+          "type": "int"
+        },
+        {
+          "name": "_indicatorRingTrait",
+          "owner": "Mine",
+          "offset": 128,
+          "type": "net.bigpoint.darkorbit.map.model.traits::PulsingRingTrait"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.env::Portal": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.env::Portal",
+        "net.bigpoint.darkorbit.map.model.core::MapEntity",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "traitAdded",
+          "owner": "EntityTraitContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "traitRemoved",
+          "owner": "EntityTraitContainer",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_traits",
+          "owner": "EntityTraitContainer",
+          "offset": 48,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_id",
+          "owner": "MapEntity",
+          "offset": 56,
+          "type": "int"
+        },
+        {
+          "name": "_position",
+          "owner": "MapEntity",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindablePointLite"
+        },
+        {
+          "name": "_firstTraits",
+          "owner": "MapEntity",
+          "offset": 72,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "entityActivated",
+          "owner": "MapEntity",
+          "offset": 80,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "entityDeactivated",
+          "owner": "MapEntity",
+          "offset": 88,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_container",
+          "owner": "MapEntity",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+        },
+        {
+          "name": "_pivots",
+          "owner": "MapEntity",
+          "offset": 104,
+          "type": "Object"
+        },
+        {
+          "name": "isClicked",
+          "owner": "Portal",
+          "offset": 112,
+          "type": "Boolean"
+        },
+        {
+          "name": "isJumping",
+          "owner": "Portal",
+          "offset": 116,
+          "type": "Boolean"
+        },
+        {
+          "name": "_designId",
+          "owner": "Portal",
+          "offset": 120,
+          "type": "int"
+        },
+        {
+          "name": "jumped",
+          "owner": "Portal",
+          "offset": 128,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "text",
+          "owner": "Portal",
+          "offset": 136,
+          "type": "com.bigpoint.utils::StringPair"
+        },
+        {
+          "name": "delayBetweenClick",
+          "owner": "Portal",
+          "offset": 144,
+          "type": "Number"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.env::Station": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.env::Station",
+        "net.bigpoint.darkorbit.map.model.core::MapEntity",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "traitAdded",
+          "owner": "EntityTraitContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "traitRemoved",
+          "owner": "EntityTraitContainer",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_traits",
+          "owner": "EntityTraitContainer",
+          "offset": 48,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_id",
+          "owner": "MapEntity",
+          "offset": 56,
+          "type": "int"
+        },
+        {
+          "name": "_position",
+          "owner": "MapEntity",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindablePointLite"
+        },
+        {
+          "name": "_firstTraits",
+          "owner": "MapEntity",
+          "offset": 72,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "entityActivated",
+          "owner": "MapEntity",
+          "offset": 80,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "entityDeactivated",
+          "owner": "MapEntity",
+          "offset": 88,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_container",
+          "owner": "MapEntity",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+        },
+        {
+          "name": "_pivots",
+          "owner": "MapEntity",
+          "offset": 104,
+          "type": "Object"
+        },
+        {
+          "name": "_displayTrait",
+          "owner": "Station",
+          "offset": 112,
+          "type": "net.bigpoint.darkorbit.map.model.traits::UberDisplayTrait"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.ship.pet::Pet": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.ship.pet::Pet",
+        "net.bigpoint.darkorbit.map.model.ship::Ship",
+        "net.bigpoint.darkorbit.map.model.core::MapEntity",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "traitAdded",
+          "owner": "EntityTraitContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "traitRemoved",
+          "owner": "EntityTraitContainer",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_traits",
+          "owner": "EntityTraitContainer",
+          "offset": 48,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_id",
+          "owner": "MapEntity",
+          "offset": 56,
+          "type": "int"
+        },
+        {
+          "name": "_position",
+          "owner": "MapEntity",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindablePointLite"
+        },
+        {
+          "name": "_firstTraits",
+          "owner": "MapEntity",
+          "offset": 72,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "entityActivated",
+          "owner": "MapEntity",
+          "offset": 80,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "entityDeactivated",
+          "owner": "MapEntity",
+          "offset": 88,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_container",
+          "owner": "MapEntity",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+        },
+        {
+          "name": "_pivots",
+          "owner": "MapEntity",
+          "offset": 104,
+          "type": "Object"
+        },
+        {
+          "name": "_isNPC",
+          "owner": "Ship",
+          "offset": 112,
+          "type": "Boolean"
+        },
+        {
+          "name": "_allowRotation",
+          "owner": "Ship",
+          "offset": 116,
+          "type": "Boolean"
+        },
+        {
+          "name": "_visible",
+          "owner": "Ship",
+          "offset": 120,
+          "type": "Boolean"
+        },
+        {
+          "name": "_patternLocked",
+          "owner": "Ship",
+          "offset": 124,
+          "type": "Boolean"
+        },
+        {
+          "name": "laserExpansionStage",
+          "owner": "Ship",
+          "offset": 128,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "isGroupMember",
+          "owner": "Ship",
+          "offset": 136,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "legendary",
+          "owner": "Ship",
+          "offset": 144,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "hasSpeedBuff",
+          "owner": "Ship",
+          "offset": 152,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "changeEnginePositions",
+          "owner": "Ship",
+          "offset": 160,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "cloaked",
+          "owner": "Ship",
+          "offset": 168,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "debug",
+          "owner": "Ship",
+          "offset": 176,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "pet",
+          "owner": "Ship",
+          "offset": 184,
+          "type": "net.bigpoint.darkorbit.map.model.ship.pet::Pet"
+        },
+        {
+          "name": "_hpTrait",
+          "owner": "Ship",
+          "offset": 192,
+          "type": "net.bigpoint.darkorbit.map.model.traits::HPTrait"
+        },
+        {
+          "name": "_shipPattern",
+          "owner": "Ship",
+          "offset": 200,
+          "type": "net.bigpoint.darkorbit.map.model.ship.patterns::ShipPattern"
+        },
+        {
+          "name": "_shipPatternChanged",
+          "owner": "Ship",
+          "offset": 208,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "activeVisualModifiers",
+          "owner": "Ship",
+          "offset": 216,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.com.module::VisualModifierCommand>"
+        },
+        {
+          "name": "_displayTrait",
+          "owner": "Ship",
+          "offset": 224,
+          "type": "net.bigpoint.darkorbit.map.model.traits::ShipDisplayTrait"
+        },
+        {
+          "name": "_uberDisplayTrait",
+          "owner": "Ship",
+          "offset": 232,
+          "type": "net.bigpoint.darkorbit.map.model.traits::UberDisplayTrait"
+        },
+        {
+          "name": "_moveTrait",
+          "owner": "Ship",
+          "offset": 240,
+          "type": "net.bigpoint.darkorbit.map.model.traits::MoveTrait"
+        },
+        {
+          "name": "_assetIdExtension",
+          "owner": "Ship",
+          "offset": 248,
+          "type": "String"
+        },
+        {
+          "name": "_info",
+          "owner": "Ship",
+          "offset": 256,
+          "type": "net.bigpoint.darkorbit.map.model.traits.hud::MapObjectInfoTrait"
+        },
+        {
+          "name": "_hitArea",
+          "owner": "Ship",
+          "offset": 264,
+          "type": "net.bigpoint.darkorbit.map.model.traits::MouseHitAreaTrait"
+        },
+        {
+          "name": "_hasDesignSet",
+          "owner": "Ship",
+          "offset": 272,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "_patternTraits",
+          "owner": "Ship",
+          "offset": 280,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_drones",
+          "owner": "Ship",
+          "offset": 288,
+          "type": "net.bigpoint.darkorbit.map.model.ship.drones::Drones"
+        },
+        {
+          "name": "_tmpPattern",
+          "owner": "Ship",
+          "offset": 296,
+          "type": "net.bigpoint.darkorbit.map.model.ship.patterns::ShipPattern"
+        },
+        {
+          "name": "idleState",
+          "owner": "Pet",
+          "offset": 304,
+          "type": "Boolean"
+        },
+        {
+          "name": "petTrait",
+          "owner": "Pet",
+          "offset": 312,
+          "type": "net.bigpoint.darkorbit.map.model.ship.pet::PetTrait"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.ship::Ship": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.ship::Ship",
+        "net.bigpoint.darkorbit.map.model.core::MapEntity",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "traitAdded",
+          "owner": "EntityTraitContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "traitRemoved",
+          "owner": "EntityTraitContainer",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_traits",
+          "owner": "EntityTraitContainer",
+          "offset": 48,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_id",
+          "owner": "MapEntity",
+          "offset": 56,
+          "type": "int"
+        },
+        {
+          "name": "_position",
+          "owner": "MapEntity",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindablePointLite"
+        },
+        {
+          "name": "_firstTraits",
+          "owner": "MapEntity",
+          "offset": 72,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "entityActivated",
+          "owner": "MapEntity",
+          "offset": 80,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "entityDeactivated",
+          "owner": "MapEntity",
+          "offset": 88,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_container",
+          "owner": "MapEntity",
+          "offset": 96,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntityContainer"
+        },
+        {
+          "name": "_pivots",
+          "owner": "MapEntity",
+          "offset": 104,
+          "type": "Object"
+        },
+        {
+          "name": "_isNPC",
+          "owner": "Ship",
+          "offset": 112,
+          "type": "Boolean"
+        },
+        {
+          "name": "_allowRotation",
+          "owner": "Ship",
+          "offset": 116,
+          "type": "Boolean"
+        },
+        {
+          "name": "_visible",
+          "owner": "Ship",
+          "offset": 120,
+          "type": "Boolean"
+        },
+        {
+          "name": "_patternLocked",
+          "owner": "Ship",
+          "offset": 124,
+          "type": "Boolean"
+        },
+        {
+          "name": "laserExpansionStage",
+          "owner": "Ship",
+          "offset": 128,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "isGroupMember",
+          "owner": "Ship",
+          "offset": 136,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "legendary",
+          "owner": "Ship",
+          "offset": 144,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "hasSpeedBuff",
+          "owner": "Ship",
+          "offset": 152,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "changeEnginePositions",
+          "owner": "Ship",
+          "offset": 160,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "cloaked",
+          "owner": "Ship",
+          "offset": 168,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "debug",
+          "owner": "Ship",
+          "offset": 176,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "pet",
+          "owner": "Ship",
+          "offset": 184,
+          "type": "net.bigpoint.darkorbit.map.model.ship.pet::Pet"
+        },
+        {
+          "name": "_hpTrait",
+          "owner": "Ship",
+          "offset": 192,
+          "type": "net.bigpoint.darkorbit.map.model.traits::HPTrait"
+        },
+        {
+          "name": "_shipPattern",
+          "owner": "Ship",
+          "offset": 200,
+          "type": "net.bigpoint.darkorbit.map.model.ship.patterns::ShipPattern"
+        },
+        {
+          "name": "_shipPatternChanged",
+          "owner": "Ship",
+          "offset": 208,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "activeVisualModifiers",
+          "owner": "Ship",
+          "offset": 216,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.com.module::VisualModifierCommand>"
+        },
+        {
+          "name": "_displayTrait",
+          "owner": "Ship",
+          "offset": 224,
+          "type": "net.bigpoint.darkorbit.map.model.traits::ShipDisplayTrait"
+        },
+        {
+          "name": "_uberDisplayTrait",
+          "owner": "Ship",
+          "offset": 232,
+          "type": "net.bigpoint.darkorbit.map.model.traits::UberDisplayTrait"
+        },
+        {
+          "name": "_moveTrait",
+          "owner": "Ship",
+          "offset": 240,
+          "type": "net.bigpoint.darkorbit.map.model.traits::MoveTrait"
+        },
+        {
+          "name": "_assetIdExtension",
+          "owner": "Ship",
+          "offset": 248,
+          "type": "String"
+        },
+        {
+          "name": "_info",
+          "owner": "Ship",
+          "offset": 256,
+          "type": "net.bigpoint.darkorbit.map.model.traits.hud::MapObjectInfoTrait"
+        },
+        {
+          "name": "_hitArea",
+          "owner": "Ship",
+          "offset": 264,
+          "type": "net.bigpoint.darkorbit.map.model.traits::MouseHitAreaTrait"
+        },
+        {
+          "name": "_hasDesignSet",
+          "owner": "Ship",
+          "offset": 272,
+          "type": "com.bigpoint.utils.bindables::BindableBoolean"
+        },
+        {
+          "name": "_patternTraits",
+          "owner": "Ship",
+          "offset": 280,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::EntityTraitBase>"
+        },
+        {
+          "name": "_drones",
+          "owner": "Ship",
+          "offset": 288,
+          "type": "net.bigpoint.darkorbit.map.model.ship.drones::Drones"
+        },
+        {
+          "name": "_tmpPattern",
+          "owner": "Ship",
+          "offset": 296,
+          "type": "net.bigpoint.darkorbit.map.model.ship.patterns::ShipPattern"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.traits.hud::MapObjectInfoTrait": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.traits.hud::MapObjectInfoTrait",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitBase",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "_owner",
+          "owner": "EntityTraitBase",
+          "offset": 32,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+        },
+        {
+          "name": "clanID",
+          "owner": "MapObjectInfoTrait",
+          "offset": 40,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "clanDiplomacy",
+          "owner": "MapObjectInfoTrait",
+          "offset": 48,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "clanTag",
+          "owner": "MapObjectInfoTrait",
+          "offset": 56,
+          "type": "com.bigpoint.utils.bindables::BindableString"
+        },
+        {
+          "name": "username",
+          "owner": "MapObjectInfoTrait",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindableString"
+        },
+        {
+          "name": "factionID",
+          "owner": "MapObjectInfoTrait",
+          "offset": 72,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "dailyRank",
+          "owner": "MapObjectInfoTrait",
+          "offset": 80,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "galaxyGatesFinished",
+          "owner": "MapObjectInfoTrait",
+          "offset": 88,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "titleID",
+          "owner": "MapObjectInfoTrait",
+          "offset": 96,
+          "type": "com.bigpoint.utils.bindables::BindableString"
+        },
+        {
+          "name": "pvpReputation",
+          "owner": "MapObjectInfoTrait",
+          "offset": 104,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "saeScore",
+          "owner": "MapObjectInfoTrait",
+          "offset": 112,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "specialType",
+          "owner": "MapObjectInfoTrait",
+          "offset": 120,
+          "type": "com.bigpoint.utils.bindables::BindableString"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.traits::AttackerTrait": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.traits::AttackerTrait",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitBase",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "_owner",
+          "owner": "EntityTraitBase",
+          "offset": 32,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+        },
+        {
+          "name": "targetChanged",
+          "owner": "AttackerTrait",
+          "offset": 40,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_laser",
+          "owner": "AttackerTrait",
+          "offset": 48,
+          "type": "net.bigpoint.darkorbit.map.model.traits.weapons::LaserCannon"
+        },
+        {
+          "name": "_rocketLauncher",
+          "owner": "AttackerTrait",
+          "offset": 56,
+          "type": "net.bigpoint.darkorbit.map.model.traits.weapons::RocketLauncher"
+        },
+        {
+          "name": "_target",
+          "owner": "AttackerTrait",
+          "offset": 64,
+          "type": "net.bigpoint.darkorbit.map.model.traits::AttackTargetTrait"
+        },
+        {
+          "name": "_targetOwner",
+          "owner": "AttackerTrait",
+          "offset": 72,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.traits::HPTrait": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.traits::HPTrait",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitBase",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "_owner",
+          "owner": "EntityTraitBase",
+          "offset": 32,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+        },
+        {
+          "name": "hpBarWidth",
+          "owner": "HPTrait",
+          "offset": 40,
+          "type": "int"
+        },
+        {
+          "name": "hp",
+          "owner": "HPTrait",
+          "offset": 48,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "maxHP",
+          "owner": "HPTrait",
+          "offset": 56,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "nanohullHP",
+          "owner": "HPTrait",
+          "offset": 64,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "nanohullMaxHP",
+          "owner": "HPTrait",
+          "offset": 72,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "shield",
+          "owner": "HPTrait",
+          "offset": 80,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "maxShield",
+          "owner": "HPTrait",
+          "offset": 88,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "_changed",
+          "owner": "HPTrait",
+          "offset": 96,
+          "type": "org.osflash.signals::ISignal"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.traits::MoveTrait": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.traits::MoveTrait",
+        "net.bigpoint.darkorbit.map.model.core::EntityTraitBase",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "_owner",
+          "owner": "EntityTraitBase",
+          "offset": 32,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+        },
+        {
+          "name": "_allowRotation",
+          "owner": "MoveTrait",
+          "offset": 40,
+          "type": "Boolean"
+        },
+        {
+          "name": "_randomizeNPCRotationId",
+          "owner": "MoveTrait",
+          "offset": 44,
+          "type": "uint"
+        },
+        {
+          "name": "_persistentStatus",
+          "owner": "MoveTrait",
+          "offset": 48,
+          "type": "Boolean"
+        },
+        {
+          "name": "rotation",
+          "owner": "MoveTrait",
+          "offset": 56,
+          "type": "com.bigpoint.utils.bindables::BindableRotation"
+        },
+        {
+          "name": "moveStarted",
+          "owner": "MoveTrait",
+          "offset": 64,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "moveStopped",
+          "owner": "MoveTrait",
+          "offset": 72,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "speed",
+          "owner": "MoveTrait",
+          "offset": 80,
+          "type": "com.bigpoint.utils.bindables::BindableInt"
+        },
+        {
+          "name": "_onMoveComplete",
+          "owner": "MoveTrait",
+          "offset": 88,
+          "type": "Function"
+        },
+        {
+          "name": "_onMoveCompleteParams",
+          "owner": "MoveTrait",
+          "offset": 96,
+          "type": "Array"
+        },
+        {
+          "name": "_destination",
+          "owner": "MoveTrait",
+          "offset": 104,
+          "type": "com.bigpoint.utils::PointLite"
+        },
+        {
+          "name": "_gotoAnimator",
+          "owner": "MoveTrait",
+          "offset": 112,
+          "type": "com.greensock::TweenLite"
+        },
+        {
+          "name": "_attackTarget",
+          "owner": "MoveTrait",
+          "offset": 120,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model.utils::LockManager": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model.utils::LockManager",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "targetChanged",
+          "owner": "LockManager",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_target",
+          "owner": "LockManager",
+          "offset": 40,
+          "type": "net.bigpoint.darkorbit.map.model.core::MapEntity"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit.map.model::Map": {
+      "chain": [
+        "net.bigpoint.darkorbit.map.model::Map",
+        "net.bigpoint.darkorbit.map.model.core::MapEntityContainer",
+        "Object"
+      ],
+      "fields": [
+        {
+          "name": "entityAdded",
+          "owner": "MapEntityContainer",
+          "offset": 32,
+          "type": "org.osflash.signals::ISignal"
+        },
+        {
+          "name": "_entities",
+          "owner": "MapEntityContainer",
+          "offset": 40,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.core::MapEntity>"
+        },
+        {
+          "name": "_entitiesById",
+          "owner": "MapEntityContainer",
+          "offset": 48,
+          "type": "Object"
+        },
+        {
+          "name": "_traitsByClass",
+          "owner": "MapEntityContainer",
+          "offset": 56,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "_rabbits",
+          "owner": "MapEntityContainer",
+          "offset": 64,
+          "type": "__AS3__.vec::Vector.<net.bigpoint.darkorbit.map.model.env.rabbit::Rabbit>"
+        },
+        {
+          "name": "_creationTime",
+          "owner": "Map",
+          "offset": 72,
+          "type": "uint"
+        },
+        {
+          "name": "_serious_width",
+          "owner": "Map",
+          "offset": 76,
+          "type": "int"
+        },
+        {
+          "name": "_serious_height",
+          "owner": "Map",
+          "offset": 80,
+          "type": "int"
+        },
+        {
+          "name": "_mapID",
+          "owner": "Map",
+          "offset": 84,
+          "type": "int"
+        },
+        {
+          "name": "storage",
+          "owner": "Map",
+          "offset": 88,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "mapXmlChanged",
+          "owner": "Map",
+          "offset": 96,
+          "type": "org.osflash.signals::Signal"
+        },
+        {
+          "name": "_mapXml",
+          "owner": "Map",
+          "offset": 104,
+          "type": "XML"
+        },
+        {
+          "name": "_poiZones",
+          "owner": "Map",
+          "offset": 112,
+          "type": "net.bigpoint.darkorbit.map.model.poizones::POIZoneManager"
+        },
+        {
+          "name": "_ships",
+          "owner": "Map",
+          "offset": 120,
+          "type": "net.bigpoint.darkorbit.map.model.ship::ShipManager"
+        },
+        {
+          "name": "_lockManager",
+          "owner": "Map",
+          "offset": 128,
+          "type": "net.bigpoint.darkorbit.map.model.utils::LockManager"
+        },
+        {
+          "name": "_effects",
+          "owner": "Map",
+          "offset": 136,
+          "type": "net.bigpoint.darkorbit.map.model.effects::EffectManager"
+        },
+        {
+          "name": "debugTridant",
+          "owner": "Map",
+          "offset": 144,
+          "type": "away3d.debug::Trident"
+        },
+        {
+          "name": "_scaleFactor",
+          "owner": "Map",
+          "offset": 152,
+          "type": "Number"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit::Main": {
+      "chain": [
+        "net.bigpoint.darkorbit::Main",
+        "spark.core::SpriteVisualElement",
+        "mx.core::FlexSprite",
+        "flash.display::Sprite"
+      ],
+      "fields": [
+        {
+          "name": "nestedSpriteVisualElement",
+          "owner": "SpriteVisualElement",
+          "offset": 168,
+          "type": "Boolean"
+        },
+        {
+          "name": "hasDeltaIdentityTransform",
+          "owner": "SpriteVisualElement",
+          "offset": 172,
+          "type": "Boolean"
+        },
+        {
+          "name": "_includeInLayout",
+          "owner": "SpriteVisualElement",
+          "offset": 176,
+          "type": "Boolean"
+        },
+        {
+          "name": "_luminosityInvert",
+          "owner": "SpriteVisualElement",
+          "offset": 180,
+          "type": "Boolean"
+        },
+        {
+          "name": "_luminosityClip",
+          "owner": "SpriteVisualElement",
+          "offset": 184,
+          "type": "Boolean"
+        },
+        {
+          "name": "maskChanged",
+          "owner": "SpriteVisualElement",
+          "offset": 188,
+          "type": "Boolean"
+        },
+        {
+          "name": "maskTypeChanged",
+          "owner": "SpriteVisualElement",
+          "offset": 192,
+          "type": "Boolean"
+        },
+        {
+          "name": "_visible",
+          "owner": "SpriteVisualElement",
+          "offset": 196,
+          "type": "Boolean"
+        },
+        {
+          "name": "_layoutFeatures",
+          "owner": "SpriteVisualElement",
+          "offset": 200,
+          "type": "mx.core::AdvancedLayoutFeatures"
+        },
+        {
+          "name": "_transform",
+          "owner": "SpriteVisualElement",
+          "offset": 208,
+          "type": "flash.geom::Transform"
+        },
+        {
+          "name": "_baseline",
+          "owner": "SpriteVisualElement",
+          "offset": 216,
+          "type": "Object"
+        },
+        {
+          "name": "_blendMode",
+          "owner": "SpriteVisualElement",
+          "offset": 224,
+          "type": "String"
+        },
+        {
+          "name": "_bottom",
+          "owner": "SpriteVisualElement",
+          "offset": 232,
+          "type": "Object"
+        },
+        {
+          "name": "_filters",
+          "owner": "SpriteVisualElement",
+          "offset": 240,
+          "type": "Array"
+        },
+        {
+          "name": "_horizontalCenter",
+          "owner": "SpriteVisualElement",
+          "offset": 248,
+          "type": "Object"
+        },
+        {
+          "name": "_left",
+          "owner": "SpriteVisualElement",
+          "offset": 256,
+          "type": "Object"
+        },
+        {
+          "name": "_id",
+          "owner": "SpriteVisualElement",
+          "offset": 264,
+          "type": "String"
+        },
+        {
+          "name": "_moduleFactory",
+          "owner": "SpriteVisualElement",
+          "offset": 272,
+          "type": "mx.core::IFlexModuleFactory"
+        },
+        {
+          "name": "_owner",
+          "owner": "SpriteVisualElement",
+          "offset": 280,
+          "type": "flash.display::DisplayObjectContainer"
+        },
+        {
+          "name": "_designLayer",
+          "owner": "SpriteVisualElement",
+          "offset": 288,
+          "type": "mx.core::DesignLayer"
+        },
+        {
+          "name": "_mask",
+          "owner": "SpriteVisualElement",
+          "offset": 296,
+          "type": "flash.display::DisplayObject"
+        },
+        {
+          "name": "_maskType",
+          "owner": "SpriteVisualElement",
+          "offset": 304,
+          "type": "String"
+        },
+        {
+          "name": "originalMaskFilters",
+          "owner": "SpriteVisualElement",
+          "offset": 312,
+          "type": "Array"
+        },
+        {
+          "name": "_right",
+          "owner": "SpriteVisualElement",
+          "offset": 320,
+          "type": "Object"
+        },
+        {
+          "name": "_top",
+          "owner": "SpriteVisualElement",
+          "offset": 328,
+          "type": "Object"
+        },
+        {
+          "name": "_verticalCenter",
+          "owner": "SpriteVisualElement",
+          "offset": 336,
+          "type": "Object"
+        },
+        {
+          "name": "_resizeMode",
+          "owner": "SpriteVisualElement",
+          "offset": 344,
+          "type": "String"
+        },
+        {
+          "name": "_layoutDirection",
+          "owner": "SpriteVisualElement",
+          "offset": 352,
+          "type": "String"
+        },
+        {
+          "name": "naturalWidth",
+          "owner": "SpriteVisualElement",
+          "offset": 360,
+          "type": "Number"
+        },
+        {
+          "name": "naturalHeight",
+          "owner": "SpriteVisualElement",
+          "offset": 368,
+          "type": "Number"
+        },
+        {
+          "name": "_alpha",
+          "owner": "SpriteVisualElement",
+          "offset": 376,
+          "type": "Number"
+        },
+        {
+          "name": "_effectiveAlpha",
+          "owner": "SpriteVisualElement",
+          "offset": 384,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitHeight",
+          "owner": "SpriteVisualElement",
+          "offset": 392,
+          "type": "Number"
+        },
+        {
+          "name": "_height",
+          "owner": "SpriteVisualElement",
+          "offset": 400,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitMinHeight",
+          "owner": "SpriteVisualElement",
+          "offset": 408,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitMaxHeight",
+          "owner": "SpriteVisualElement",
+          "offset": 416,
+          "type": "Number"
+        },
+        {
+          "name": "_depth",
+          "owner": "SpriteVisualElement",
+          "offset": 424,
+          "type": "Number"
+        },
+        {
+          "name": "_percentHeight",
+          "owner": "SpriteVisualElement",
+          "offset": 432,
+          "type": "Number"
+        },
+        {
+          "name": "_percentWidth",
+          "owner": "SpriteVisualElement",
+          "offset": 440,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitWidth",
+          "owner": "SpriteVisualElement",
+          "offset": 448,
+          "type": "Number"
+        },
+        {
+          "name": "_width",
+          "owner": "SpriteVisualElement",
+          "offset": 456,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitMinWidth",
+          "owner": "SpriteVisualElement",
+          "offset": 464,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitMaxWidth",
+          "owner": "SpriteVisualElement",
+          "offset": 472,
+          "type": "Number"
+        },
+        {
+          "name": "_viewWidth",
+          "owner": "SpriteVisualElement",
+          "offset": 480,
+          "type": "Number"
+        },
+        {
+          "name": "_viewHeight",
+          "owner": "SpriteVisualElement",
+          "offset": 488,
+          "type": "Number"
+        },
+        {
+          "name": "userAskedForLogout",
+          "owner": "Main",
+          "offset": 496,
+          "type": "Boolean"
+        },
+        {
+          "name": "screenManager",
+          "owner": "Main",
+          "offset": 504,
+          "type": "net.bigpoint.darkorbit.managers::ScreenManager"
+        },
+        {
+          "name": "guiManager",
+          "owner": "Main",
+          "offset": 512,
+          "type": "net.bigpoint.darkorbit.gui::GuiManager"
+        },
+        {
+          "name": "questManager",
+          "owner": "Main",
+          "offset": 520,
+          "type": "net.bigpoint.darkorbit.managers::QuestManager"
+        },
+        {
+          "name": "ifgManager",
+          "owner": "Main",
+          "offset": 528,
+          "type": "net.bigpoint.darkorbit.managers::InfiltrationGameManager"
+        },
+        {
+          "name": "_windowContainer",
+          "owner": "Main",
+          "offset": 536,
+          "type": "spark.components::SkinnableContainer"
+        },
+        {
+          "name": "gameFacade",
+          "owner": "Main",
+          "offset": 544,
+          "type": "net.bigpoint.darkorbit.mvc.application::GameFacade"
+        },
+        {
+          "name": "appWindow",
+          "owner": "Main",
+          "offset": 552,
+          "type": "net.bigpoint.darkorbit::MainClientApplication"
+        },
+        {
+          "name": "_connectionManager",
+          "owner": "Main",
+          "offset": 560,
+          "type": "net.bigpoint.darkorbit.net::ConnectionManager"
+        }
+      ]
+    },
+    "net.bigpoint.darkorbit::MainClientApplication": {
+      "chain": [
+        "net.bigpoint.darkorbit::MainClientApplication",
+        "spark.components::Application",
+        "spark.components::SkinnableContainer",
+        "spark.components.supportClasses::SkinnableContainerBase",
+        "spark.components.supportClasses::SkinnableComponent",
+        "mx.core::UIComponent",
+        "mx.core::FlexSprite",
+        "flash.display::Sprite"
+      ],
+      "fields": [
+        {
+          "name": "listeningForRender",
+          "owner": "UIComponent",
+          "offset": 168,
+          "type": "Boolean"
+        },
+        {
+          "name": "hasFocusRect",
+          "owner": "UIComponent",
+          "offset": 172,
+          "type": "Boolean"
+        },
+        {
+          "name": "parentChangedFlag",
+          "owner": "UIComponent",
+          "offset": 176,
+          "type": "Boolean"
+        },
+        {
+          "name": "_initialized",
+          "owner": "UIComponent",
+          "offset": 180,
+          "type": "Boolean"
+        },
+        {
+          "name": "_processedDescriptors",
+          "owner": "UIComponent",
+          "offset": 184,
+          "type": "Boolean"
+        },
+        {
+          "name": "_updateCompletePendingFlag",
+          "owner": "UIComponent",
+          "offset": 188,
+          "type": "Boolean"
+        },
+        {
+          "name": "invalidatePropertiesFlag",
+          "owner": "UIComponent",
+          "offset": 192,
+          "type": "Boolean"
+        },
+        {
+          "name": "invalidateSizeFlag",
+          "owner": "UIComponent",
+          "offset": 196,
+          "type": "Boolean"
+        },
+        {
+          "name": "invalidateDisplayListFlag",
+          "owner": "UIComponent",
+          "offset": 200,
+          "type": "Boolean"
+        },
+        {
+          "name": "setActualSizeCalled",
+          "owner": "UIComponent",
+          "offset": 204,
+          "type": "Boolean"
+        },
+        {
+          "name": "hasFontContextBeenSaved",
+          "owner": "UIComponent",
+          "offset": 208,
+          "type": "Boolean"
+        },
+        {
+          "name": "effectOverlayColor",
+          "owner": "UIComponent",
+          "offset": 212,
+          "type": "uint"
+        },
+        {
+          "name": "effectOverlayReferenceCount",
+          "owner": "UIComponent",
+          "offset": 216,
+          "type": "int"
+        },
+        {
+          "name": "saveBorderColor",
+          "owner": "UIComponent",
+          "offset": 220,
+          "type": "Boolean"
+        },
+        {
+          "name": "_usingBridge",
+          "owner": "UIComponent",
+          "offset": 224,
+          "type": "int"
+        },
+        {
+          "name": "_visible",
+          "owner": "UIComponent",
+          "offset": 228,
+          "type": "Boolean"
+        },
+        {
+          "name": "blendShaderChanged",
+          "owner": "UIComponent",
+          "offset": 232,
+          "type": "Boolean"
+        },
+        {
+          "name": "blendModeChanged",
+          "owner": "UIComponent",
+          "offset": 236,
+          "type": "Boolean"
+        },
+        {
+          "name": "_enabled",
+          "owner": "UIComponent",
+          "offset": 240,
+          "type": "Boolean"
+        },
+        {
+          "name": "_systemManagerDirty",
+          "owner": "UIComponent",
+          "offset": 244,
+          "type": "Boolean"
+        },
+        {
+          "name": "_nestLevel",
+          "owner": "UIComponent",
+          "offset": 248,
+          "type": "int"
+        },
+        {
+          "name": "cacheAsBitmapCount",
+          "owner": "UIComponent",
+          "offset": 252,
+          "type": "int"
+        },
+        {
+          "name": "_focusEnabled",
+          "owner": "UIComponent",
+          "offset": 256,
+          "type": "Boolean"
+        },
+        {
+          "name": "_hasFocusableChildren",
+          "owner": "UIComponent",
+          "offset": 260,
+          "type": "Boolean"
+        },
+        {
+          "name": "_mouseFocusEnabled",
+          "owner": "UIComponent",
+          "offset": 264,
+          "type": "Boolean"
+        },
+        {
+          "name": "_tabFocusEnabled",
+          "owner": "UIComponent",
+          "offset": 268,
+          "type": "Boolean"
+        },
+        {
+          "name": "_hasComplexLayoutMatrix",
+          "owner": "UIComponent",
+          "offset": 272,
+          "type": "Boolean"
+        },
+        {
+          "name": "_includeInLayout",
+          "owner": "UIComponent",
+          "offset": 276,
+          "type": "Boolean"
+        },
+        {
+          "name": "playStateTransition",
+          "owner": "UIComponent",
+          "offset": 280,
+          "type": "Boolean"
+        },
+        {
+          "name": "_currentStateChanged",
+          "owner": "UIComponent",
+          "offset": 284,
+          "type": "Boolean"
+        },
+        {
+          "name": "_isPopUp",
+          "owner": "UIComponent",
+          "offset": 288,
+          "type": "Boolean"
+        },
+        {
+          "name": "_showInAutomationHierarchy",
+          "owner": "UIComponent",
+          "offset": 292,
+          "type": "Boolean"
+        },
+        {
+          "name": "errorStringChanged",
+          "owner": "UIComponent",
+          "offset": 296,
+          "type": "Boolean"
+        },
+        {
+          "name": "_isEffectStarted",
+          "owner": "UIComponent",
+          "offset": 300,
+          "type": "Boolean"
+        },
+        {
+          "name": "preventDrawFocus",
+          "owner": "UIComponent",
+          "offset": 304,
+          "type": "Boolean"
+        },
+        {
+          "name": "_maintainProjectionCenter",
+          "owner": "UIComponent",
+          "offset": 308,
+          "type": "Boolean"
+        },
+        {
+          "name": "deferredSetStyles",
+          "owner": "UIComponent",
+          "offset": 312,
+          "type": "Object"
+        },
+        {
+          "name": "methodQueue",
+          "owner": "UIComponent",
+          "offset": 320,
+          "type": "Array"
+        },
+        {
+          "name": "transitionFromState",
+          "owner": "UIComponent",
+          "offset": 328,
+          "type": "String"
+        },
+        {
+          "name": "transitionToState",
+          "owner": "UIComponent",
+          "offset": 336,
+          "type": "String"
+        },
+        {
+          "name": "layoutDirectionCachedValue",
+          "owner": "UIComponent",
+          "offset": 344,
+          "type": "String"
+        },
+        {
+          "name": "oldEmbeddedFontContext",
+          "owner": "UIComponent",
+          "offset": 352,
+          "type": "mx.core::IFlexModuleFactory"
+        },
+        {
+          "name": "_layoutFeatures",
+          "owner": "UIComponent",
+          "offset": 360,
+          "type": "mx.core::AdvancedLayoutFeatures"
+        },
+        {
+          "name": "_transform",
+          "owner": "UIComponent",
+          "offset": 368,
+          "type": "flash.geom::Transform"
+        },
+        {
+          "name": "cachedTextFormat",
+          "owner": "UIComponent",
+          "offset": 376,
+          "type": "mx.core::UITextFormat"
+        },
+        {
+          "name": "effectOverlay",
+          "owner": "UIComponent",
+          "offset": 384,
+          "type": "mx.core::UIComponent"
+        },
+        {
+          "name": "automaticRadioButtonGroups",
+          "owner": "UIComponent",
+          "offset": 392,
+          "type": "Object"
+        },
+        {
+          "name": "_owner",
+          "owner": "UIComponent",
+          "offset": 400,
+          "type": "flash.display::DisplayObjectContainer"
+        },
+        {
+          "name": "_parent",
+          "owner": "UIComponent",
+          "offset": 408,
+          "type": "flash.display::DisplayObjectContainer"
+        },
+        {
+          "name": "_blendMode",
+          "owner": "UIComponent",
+          "offset": 416,
+          "type": "String"
+        },
+        {
+          "name": "_filters",
+          "owner": "UIComponent",
+          "offset": 424,
+          "type": "Array"
+        },
+        {
+          "name": "_designLayer",
+          "owner": "UIComponent",
+          "offset": 432,
+          "type": "mx.core::DesignLayer"
+        },
+        {
+          "name": "_tweeningProperties",
+          "owner": "UIComponent",
+          "offset": 440,
+          "type": "Array"
+        },
+        {
+          "name": "_focusManager",
+          "owner": "UIComponent",
+          "offset": 448,
+          "type": "mx.managers::IFocusManager"
+        },
+        {
+          "name": "_resourceManager",
+          "owner": "UIComponent",
+          "offset": 456,
+          "type": "mx.resources::IResourceManager"
+        },
+        {
+          "name": "_styleManager",
+          "owner": "UIComponent",
+          "offset": 464,
+          "type": "mx.styles::IStyleManager2"
+        },
+        {
+          "name": "_systemManager",
+          "owner": "UIComponent",
+          "offset": 472,
+          "type": "mx.managers::ISystemManager"
+        },
+        {
+          "name": "_descriptor",
+          "owner": "UIComponent",
+          "offset": 480,
+          "type": "mx.core::UIComponentDescriptor"
+        },
+        {
+          "name": "_document",
+          "owner": "UIComponent",
+          "offset": 488,
+          "type": "Object"
+        },
+        {
+          "name": "_documentDescriptor",
+          "owner": "UIComponent",
+          "offset": 496,
+          "type": "mx.core::UIComponentDescriptor"
+        },
+        {
+          "name": "_id",
+          "owner": "UIComponent",
+          "offset": 504,
+          "type": "String"
+        },
+        {
+          "name": "_moduleFactory",
+          "owner": "UIComponent",
+          "offset": 512,
+          "type": "mx.core::IFlexModuleFactory"
+        },
+        {
+          "name": "_inheritingStyles",
+          "owner": "UIComponent",
+          "offset": 520,
+          "type": "Object"
+        },
+        {
+          "name": "_nonInheritingStyles",
+          "owner": "UIComponent",
+          "offset": 528,
+          "type": "Object"
+        },
+        {
+          "name": "_styleDeclaration",
+          "owner": "UIComponent",
+          "offset": 536,
+          "type": "mx.styles::CSSStyleDeclaration"
+        },
+        {
+          "name": "_cachePolicy",
+          "owner": "UIComponent",
+          "offset": 544,
+          "type": "String"
+        },
+        {
+          "name": "_focusPane",
+          "owner": "UIComponent",
+          "offset": 552,
+          "type": "flash.display::Sprite"
+        },
+        {
+          "name": "oldLayoutDirection",
+          "owner": "UIComponent",
+          "offset": 560,
+          "type": "String"
+        },
+        {
+          "name": "_instanceIndices",
+          "owner": "UIComponent",
+          "offset": 568,
+          "type": "Array"
+        },
+        {
+          "name": "_repeaters",
+          "owner": "UIComponent",
+          "offset": 576,
+          "type": "Array"
+        },
+        {
+          "name": "_repeaterIndices",
+          "owner": "UIComponent",
+          "offset": 584,
+          "type": "Array"
+        },
+        {
+          "name": "_currentState",
+          "owner": "UIComponent",
+          "offset": 592,
+          "type": "String"
+        },
+        {
+          "name": "requestedCurrentState",
+          "owner": "UIComponent",
+          "offset": 600,
+          "type": "String"
+        },
+        {
+          "name": "_currentStateDeferred",
+          "owner": "UIComponent",
+          "offset": 608,
+          "type": "String"
+        },
+        {
+          "name": "_states",
+          "owner": "UIComponent",
+          "offset": 616,
+          "type": "Array"
+        },
+        {
+          "name": "_currentTransition",
+          "owner": "UIComponent",
+          "offset": 624,
+          "type": "mx.states::Transition"
+        },
+        {
+          "name": "_transitions",
+          "owner": "UIComponent",
+          "offset": 632,
+          "type": "Array"
+        },
+        {
+          "name": "_flexContextMenu",
+          "owner": "UIComponent",
+          "offset": 640,
+          "type": "mx.controls::IFlexContextMenu"
+        },
+        {
+          "name": "_styleName",
+          "owner": "UIComponent",
+          "offset": 648,
+          "type": "Object"
+        },
+        {
+          "name": "_toolTip",
+          "owner": "UIComponent",
+          "offset": 656,
+          "type": "String"
+        },
+        {
+          "name": "_uid",
+          "owner": "UIComponent",
+          "offset": 664,
+          "type": "String"
+        },
+        {
+          "name": "_automationDelegate",
+          "owner": "UIComponent",
+          "offset": 672,
+          "type": "mx.automation::IAutomationObject"
+        },
+        {
+          "name": "_automationName",
+          "owner": "UIComponent",
+          "offset": 680,
+          "type": "String"
+        },
+        {
+          "name": "_errorString",
+          "owner": "UIComponent",
+          "offset": 688,
+          "type": "String"
+        },
+        {
+          "name": "oldErrorString",
+          "owner": "UIComponent",
+          "offset": 696,
+          "type": "String"
+        },
+        {
+          "name": "errorArray",
+          "owner": "UIComponent",
+          "offset": 704,
+          "type": "Array"
+        },
+        {
+          "name": "errorObjectArray",
+          "owner": "UIComponent",
+          "offset": 712,
+          "type": "Array"
+        },
+        {
+          "name": "_validationSubField",
+          "owner": "UIComponent",
+          "offset": 720,
+          "type": "String"
+        },
+        {
+          "name": "advanceStyleClientChildren",
+          "owner": "UIComponent",
+          "offset": 728,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "_effectsStarted",
+          "owner": "UIComponent",
+          "offset": 736,
+          "type": "Array"
+        },
+        {
+          "name": "_affectedProperties",
+          "owner": "UIComponent",
+          "offset": 744,
+          "type": "Object"
+        },
+        {
+          "name": "_endingEffectInstances",
+          "owner": "UIComponent",
+          "offset": 752,
+          "type": "Array"
+        },
+        {
+          "name": "oldX",
+          "owner": "UIComponent",
+          "offset": 760,
+          "type": "Number"
+        },
+        {
+          "name": "oldY",
+          "owner": "UIComponent",
+          "offset": 768,
+          "type": "Number"
+        },
+        {
+          "name": "oldWidth",
+          "owner": "UIComponent",
+          "offset": 776,
+          "type": "Number"
+        },
+        {
+          "name": "oldHeight",
+          "owner": "UIComponent",
+          "offset": 784,
+          "type": "Number"
+        },
+        {
+          "name": "oldMinWidth",
+          "owner": "UIComponent",
+          "offset": 792,
+          "type": "Number"
+        },
+        {
+          "name": "oldMinHeight",
+          "owner": "UIComponent",
+          "offset": 800,
+          "type": "Number"
+        },
+        {
+          "name": "oldExplicitWidth",
+          "owner": "UIComponent",
+          "offset": 808,
+          "type": "Number"
+        },
+        {
+          "name": "oldExplicitHeight",
+          "owner": "UIComponent",
+          "offset": 816,
+          "type": "Number"
+        },
+        {
+          "name": "oldScaleX",
+          "owner": "UIComponent",
+          "offset": 824,
+          "type": "Number"
+        },
+        {
+          "name": "oldScaleY",
+          "owner": "UIComponent",
+          "offset": 832,
+          "type": "Number"
+        },
+        {
+          "name": "origBorderColor",
+          "owner": "UIComponent",
+          "offset": 840,
+          "type": "Number"
+        },
+        {
+          "name": "_width",
+          "owner": "UIComponent",
+          "offset": 848,
+          "type": "Number"
+        },
+        {
+          "name": "_height",
+          "owner": "UIComponent",
+          "offset": 856,
+          "type": "Number"
+        },
+        {
+          "name": "_scaleX",
+          "owner": "UIComponent",
+          "offset": 864,
+          "type": "Number"
+        },
+        {
+          "name": "_scaleY",
+          "owner": "UIComponent",
+          "offset": 872,
+          "type": "Number"
+        },
+        {
+          "name": "_alpha",
+          "owner": "UIComponent",
+          "offset": 880,
+          "type": "Number"
+        },
+        {
+          "name": "_measuredMinWidth",
+          "owner": "UIComponent",
+          "offset": 888,
+          "type": "Number"
+        },
+        {
+          "name": "_measuredMinHeight",
+          "owner": "UIComponent",
+          "offset": 896,
+          "type": "Number"
+        },
+        {
+          "name": "_measuredWidth",
+          "owner": "UIComponent",
+          "offset": 904,
+          "type": "Number"
+        },
+        {
+          "name": "_measuredHeight",
+          "owner": "UIComponent",
+          "offset": 912,
+          "type": "Number"
+        },
+        {
+          "name": "_percentWidth",
+          "owner": "UIComponent",
+          "offset": 920,
+          "type": "Number"
+        },
+        {
+          "name": "_percentHeight",
+          "owner": "UIComponent",
+          "offset": 928,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitMinWidth",
+          "owner": "UIComponent",
+          "offset": 936,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitMinHeight",
+          "owner": "UIComponent",
+          "offset": 944,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitMaxWidth",
+          "owner": "UIComponent",
+          "offset": 952,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitMaxHeight",
+          "owner": "UIComponent",
+          "offset": 960,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitWidth",
+          "owner": "UIComponent",
+          "offset": 968,
+          "type": "Number"
+        },
+        {
+          "name": "_explicitHeight",
+          "owner": "UIComponent",
+          "offset": 976,
+          "type": "Number"
+        },
+        {
+          "name": "lastUnscaledWidth",
+          "owner": "UIComponent",
+          "offset": 984,
+          "type": "Number"
+        },
+        {
+          "name": "lastUnscaledHeight",
+          "owner": "UIComponent",
+          "offset": 992,
+          "type": "Number"
+        },
+        {
+          "name": "skinDestructionPolicyChanged",
+          "owner": "SkinnableComponent",
+          "offset": 1000,
+          "type": "Boolean"
+        },
+        {
+          "name": "errorStringChanged",
+          "owner": "SkinnableComponent",
+          "offset": 1004,
+          "type": "Boolean"
+        },
+        {
+          "name": "_explicitMouseEnabled",
+          "owner": "SkinnableComponent",
+          "offset": 1008,
+          "type": "Boolean"
+        },
+        {
+          "name": "_explicitMouseChildren",
+          "owner": "SkinnableComponent",
+          "offset": 1012,
+          "type": "Boolean"
+        },
+        {
+          "name": "drawFocusAnyway",
+          "owner": "SkinnableComponent",
+          "offset": 1016,
+          "type": "Boolean"
+        },
+        {
+          "name": "skinChanged",
+          "owner": "SkinnableComponent",
+          "offset": 1020,
+          "type": "Boolean"
+        },
+        {
+          "name": "skinFactoryStyleChanged",
+          "owner": "SkinnableComponent",
+          "offset": 1024,
+          "type": "Boolean"
+        },
+        {
+          "name": "skinStateIsDirty",
+          "owner": "SkinnableComponent",
+          "offset": 1028,
+          "type": "Boolean"
+        },
+        {
+          "name": "_skinDestructionPolicy",
+          "owner": "SkinnableComponent",
+          "offset": 1032,
+          "type": "String"
+        },
+        {
+          "name": "_skin",
+          "owner": "SkinnableComponent",
+          "offset": 1040,
+          "type": "mx.core::UIComponent"
+        },
+        {
+          "name": "errorObj",
+          "owner": "SkinnableComponent",
+          "offset": 1048,
+          "type": "flash.display::DisplayObject"
+        },
+        {
+          "name": "focusObj",
+          "owner": "SkinnableComponent",
+          "offset": 1056,
+          "type": "flash.display::DisplayObject"
+        },
+        {
+          "name": "dynamicPartsCache",
+          "owner": "SkinnableComponent",
+          "offset": 1064,
+          "type": "Object"
+        },
+        {
+          "name": "_defaultButton",
+          "owner": "SkinnableContainerBase",
+          "offset": 1072,
+          "type": "mx.core::IFlexDisplayObject"
+        },
+        {
+          "name": "creationPolicyNone",
+          "owner": "SkinnableContainer",
+          "offset": 1080,
+          "type": "Boolean"
+        },
+        {
+          "name": "_contentModified",
+          "owner": "SkinnableContainer",
+          "offset": 1084,
+          "type": "Boolean"
+        },
+        {
+          "name": "mxmlContentCreated",
+          "owner": "SkinnableContainer",
+          "offset": 1088,
+          "type": "Boolean"
+        },
+        {
+          "name": "_deferredContentCreated",
+          "owner": "SkinnableContainer",
+          "offset": 1092,
+          "type": "Boolean"
+        },
+        {
+          "name": "_809612678contentGroup",
+          "owner": "SkinnableContainer",
+          "offset": 1096,
+          "type": "spark.components::Group"
+        },
+        {
+          "name": "contentGroupProperties",
+          "owner": "SkinnableContainer",
+          "offset": 1104,
+          "type": "Object"
+        },
+        {
+          "name": "_placeHolderGroup",
+          "owner": "SkinnableContainer",
+          "offset": 1112,
+          "type": "spark.components::Group"
+        },
+        {
+          "name": "_mxmlContent",
+          "owner": "SkinnableContainer",
+          "offset": 1120,
+          "type": "Array"
+        },
+        {
+          "name": "_mxmlContentFactory",
+          "owner": "SkinnableContainer",
+          "offset": 1128,
+          "type": "mx.core::IDeferredInstance"
+        },
+        {
+          "name": "isIOS",
+          "owner": "Application",
+          "offset": 1136,
+          "type": "Boolean"
+        },
+        {
+          "name": "explicitSizingForOrientation",
+          "owner": "Application",
+          "offset": 1140,
+          "type": "Boolean"
+        },
+        {
+          "name": "keyboardActiveInOrientationChange",
+          "owner": "Application",
+          "offset": 1144,
+          "type": "Boolean"
+        },
+        {
+          "name": "resizeHandlerAdded",
+          "owner": "Application",
+          "offset": 1148,
+          "type": "Boolean"
+        },
+        {
+          "name": "percentBoundsChanged",
+          "owner": "Application",
+          "offset": 1152,
+          "type": "Boolean"
+        },
+        {
+          "name": "resizeWidth",
+          "owner": "Application",
+          "offset": 1156,
+          "type": "Boolean"
+        },
+        {
+          "name": "resizeHeight",
+          "owner": "Application",
+          "offset": 1160,
+          "type": "Boolean"
+        },
+        {
+          "name": "isSoftKeyboardActive",
+          "owner": "Application",
+          "offset": 1164,
+          "type": "Boolean"
+        },
+        {
+          "name": "synchronousResize",
+          "owner": "Application",
+          "offset": 1168,
+          "type": "Boolean"
+        },
+        {
+          "name": "preloaderChromeColor",
+          "owner": "Application",
+          "offset": 1172,
+          "type": "uint"
+        },
+        {
+          "name": "scriptRecursionLimit",
+          "owner": "Application",
+          "offset": 1176,
+          "type": "int"
+        },
+        {
+          "name": "usePreloader",
+          "owner": "Application",
+          "offset": 1180,
+          "type": "Boolean"
+        },
+        {
+          "name": "_resizeForSoftKeyboard",
+          "owner": "Application",
+          "offset": 1184,
+          "type": "Boolean"
+        },
+        {
+          "name": "softKeyboardTarget",
+          "owner": "Application",
+          "offset": 1192,
+          "type": "Object"
+        },
+        {
+          "name": "cachedDimensions",
+          "owner": "Application",
+          "offset": 1200,
+          "type": "flash.utils::Dictionary"
+        },
+        {
+          "name": "preloadObj",
+          "owner": "Application",
+          "offset": 1208,
+          "type": "Object"
+        },
+        {
+          "name": "viewSourceCMI",
+          "owner": "Application",
+          "offset": 1216,
+          "type": "flash.ui::ContextMenuItem"
+        },
+        {
+          "name": "controlBarGroupProperties",
+          "owner": "Application",
+          "offset": 1224,
+          "type": "Object"
+        },
+        {
+          "name": "controlBarGroup",
+          "owner": "Application",
+          "offset": 1232,
+          "type": "spark.components::Group"
+        },
+        {
+          "name": "pageTitle",
+          "owner": "Application",
+          "offset": 1240,
+          "type": "String"
+        },
+        {
+          "name": "preloader",
+          "owner": "Application",
+          "offset": 1248,
+          "type": "Object"
+        },
+        {
+          "name": "splashScreenScaleMode",
+          "owner": "Application",
+          "offset": 1256,
+          "type": "String"
+        },
+        {
+          "name": "_parameters",
+          "owner": "Application",
+          "offset": 1264,
+          "type": "Object"
+        },
+        {
+          "name": "_url",
+          "owner": "Application",
+          "offset": 1272,
+          "type": "String"
+        },
+        {
+          "name": "_viewSourceURL",
+          "owner": "Application",
+          "offset": 1280,
+          "type": "String"
+        },
+        {
+          "name": "previousWidth",
+          "owner": "Application",
+          "offset": 1288,
+          "type": "Number"
+        },
+        {
+          "name": "previousHeight",
+          "owner": "Application",
+          "offset": 1296,
+          "type": "Number"
+        },
+        {
+          "name": "frameRate",
+          "owner": "Application",
+          "offset": 1304,
+          "type": "Number"
+        },
+        {
+          "name": "scriptTimeLimit",
+          "owner": "Application",
+          "offset": 1312,
+          "type": "Number"
+        },
+        {
+          "name": "splashScreenMinimumDisplayTime",
+          "owner": "Application",
+          "offset": 1320,
+          "type": "Number"
+        },
+        {
+          "name": "_applicationDPI",
+          "owner": "Application",
+          "offset": 1328,
+          "type": "Number"
+        },
+        {
+          "name": "__moduleFactoryInitialized",
+          "owner": "MainClientApplication",
+          "offset": 1336,
+          "type": "Boolean"
+        },
+        {
+          "name": "_MainClientApplication_StylesInit_done",
+          "owner": "MainClientApplication",
+          "offset": 1340,
+          "type": "Boolean"
+        },
+        {
+          "name": "_3343801main",
+          "owner": "MainClientApplication",
+          "offset": 1344,
+          "type": "net.bigpoint.darkorbit::Main"
+        },
+        {
+          "name": "_1659371121windowContainer",
+          "owner": "MainClientApplication",
+          "offset": 1352,
+          "type": "spark.components::SkinnableContainer"
+        },
+        {
+          "name": "_embed__font_EurostileT_medium_normal_1074410548",
+          "owner": "MainClientApplication",
+          "offset": 1360,
+          "type": "Class"
+        },
+        {
+          "name": "_embed__font_EurostileTHea_medium_normal_1991873928",
+          "owner": "MainClientApplication",
+          "offset": 1368,
+          "type": "Class"
+        },
+        {
+          "name": "_embed__font_EurostileTHeaNoneCFF_medium_normal_1671520351",
+          "owner": "MainClientApplication",
+          "offset": 1376,
+          "type": "Class"
+        },
+        {
+          "name": "_embed__font_EurostileTNoneCFF_medium_normal_688355214",
+          "owner": "MainClientApplication",
+          "offset": 1384,
+          "type": "Class"
+        }
+      ]
+    }
+  }
+}
