@@ -13,6 +13,8 @@ package
     import flash.text.TextField;
     import flash.text.TextFormat;
     import flash.events.TimerEvent;
+    import flash.media.SoundMixer;
+    import flash.media.SoundTransform;
     import flash.external.ExternalInterface;
     import flash.system.ApplicationDomain;
     import flash.system.Security;
@@ -46,6 +48,13 @@ package
         private static var _bindings:Object = {};
         private static var _frameQueue:Array = [];
         private static var _results:Object = {};
+        // Host settings (InProcessPlayer setMaxFps/setVolume). 60 is the game rate.
+        private static var _targetFps:int = 60;
+        private static var _volumeApplied:Boolean = false;
+        private static var _settingsLoaded:Boolean = false;
+        // Direct-action targets, rebuilt when the ScreenManager or map changes.
+        private static var _direct:Object = null;
+        private static var _signatures:Object = {};
         private static var _frames:Number = 0;
         private static var _captureAt:int = 0;
         private static var _captureEnabled:Boolean=true;
@@ -209,6 +218,11 @@ package
                 }
                 return JSON.stringify(value);
             });
+            ExternalInterface.addCallback("settingsAS", function(fps:String, volume:String):String {
+                applySettings(Number(fps), Number(volume));
+                _settingsLoaded = true;
+                return "configured";
+            });
             ExternalInterface.addCallback("queueAS", queueCall);
             ExternalInterface.addCallback("resultAS", takeResult);
             _ready = true;
@@ -252,7 +266,14 @@ package
                 try { plantAnchor(); } catch (ignoredAnchor:Error) {}
                 ExternalInterface.call("xenomitNativeFrame");
             }
-            if (stage != null && stage.frameRate != 60) stage.frameRate = 60;
+            if (!_settingsLoaded && ExternalInterface.available) {
+                _settingsLoaded = true;
+                try {
+                    var settings:Array = String(ExternalInterface.call("xenomitSettings")).split(",");
+                    if (settings.length == 2) applySettings(Number(settings[0]), Number(settings[1]));
+                } catch (ignoredSettings:Error) {}
+            }
+            if (stage != null && stage.frameRate != _targetFps) stage.frameRate = _targetFps;
             var now:int = getTimer();
             if (now - _fpsAt >= 1000) {
                 _fps = (_frames - _fpsFrames) * 1000 / (now - _fpsAt);
@@ -310,14 +331,138 @@ package
                     _navigationLastMs=getTimer()-pepperStart;
                 } catch (ignoredPepperNavigation:Error) {}
             }
-            // Bounded FIFO: one operation per game frame. No native AVM addresses.
-            if (_frameQueue.length > 0) {
+            // Bounded FIFO: up to four operations within 4 ms per game frame. The
+            // host is told each result at once (xenomitResult); resultAS stays
+            // as the fallback when the host does not accept the push.
+            var executed:int = 0;
+            var budgetStart:int = getTimer();
+            while (_frameQueue.length > 0 && executed < 4 && (executed == 0 || getTimer() - budgetStart < 4)) {
                 var q:Object = _frameQueue.shift();
-                _results[q.id] = {at:now, value: now > q.deadline ?
-                    fail("frame call expired before execution") : invoke(q.target,q.method,q.args)};
+                executed++;
+                var value:String = getTimer() > q.deadline ?
+                    fail("frame call expired before execution") : invoke(q.target,q.method,q.args);
+                var pushed:Boolean = false;
+                if (ExternalInterface.available) {
+                    try { pushed = String(ExternalInterface.call("xenomitResult", q.id, value)) == "accepted"; }
+                    catch (ignoredPush:Error) {}
+                }
+                if (!pushed) _results[q.id] = {at:now, value:value};
             }
             for (var key:String in _results) if (now - _results[key].at > 10000) delete _results[key];
         }
+        private static function applySettings(fps:Number, volume:Number):void
+        {
+            _targetFps = fps >= 1 && fps <= 100 ? int(fps) : 60;
+            if (!isNaN(volume) && volume >= 0 && volume <= 100 && (_volumeApplied || volume < 100)) {
+                SoundMixer.soundTransform = new SoundTransform(volume / 100);
+                _volumeApplied = true;
+            }
+        }
+
+        private static function directTargets():Object
+        {
+            var screen:Object = resolvePath("net.bigpoint.darkorbit.managers.ScreenManager.getInstance()");
+            var map:Object = member(screen, "map");
+            if (_direct == null || _direct.screen !== screen || _direct.map !== map) {
+                _direct = {screen:screen, map:map, events:member(screen, "eventManager"),
+                    ships:map == null ? null : callMember(map, "getShipManager"),
+                    facade:resolvePath("net.bigpoint.darkorbit.mvc.application.GameFacade.getInstance()")};
+            }
+            return _direct;
+        }
+
+        private static function required(target:Object, name:String):Object
+        {
+            if (target == null) throw new Error(name + " unavailable");
+            return target;
+        }
+
+        // InProcessPlayer direct interactions (moveShip, selectEntity, collectBox,
+        // sendNotification) on the same game paths the controller used through
+        // reflection. Targets are cached; entities resolve by stable ID.
+        private static function direct(args:Array):Object
+        {
+            if (args == null || args.length < 1) throw new Error("direct action missing");
+            var targets:Object;
+            try { targets = directTargets(); } catch (error:Error) { _direct = null; throw error; }
+            var events:Object = targets.events, ships:Object = targets.ships;
+            switch (String(args[0])) {
+                case "move":
+                    required(events, "event manager").moveHeroToCordinates(int(args[1]), int(args[2]));
+                    return null;
+                case "stop":
+                    required(events, "event manager").stopHero();
+                    return null;
+                case "collect":
+                    var box:Object = resolveEntity(Number(args[1]));
+                    var at:Object = args.length >= 4 ? {x:Number(args[2]), y:Number(args[3])} : member(box, "position");
+                    if (at == null) throw new Error("entity has no position");
+                    required(events, "event manager").moveHeroToCordinates(int(Math.round(at.x)), int(Math.round(at.y)), box);
+                    return null;
+                case "select":
+                    var ship:Object = resolveEntity(Number(args[1]));
+                    var hp:Object = member(ship, "hp");
+                    required(ships, "ship manager").selectShip(int(args[1]),
+                        traitNumber(hp, "hp"), traitNumber(hp, "maxHP"), traitNumber(hp, "shield"),
+                        traitNumber(hp, "maxShield"), traitNumber(hp, "nanohullHP"), traitNumber(hp, "nanohullMaxHP"));
+                    if (args[2] === true) required(targets.facade, "game facade").sendNotification("MapAssetNotificationAttackMapAsset");
+                    return null;
+                case "deselect":
+                    required(ships, "ship manager").deselectSelectedShip();
+                    return null;
+                case "notify":
+                    var notifyArgs:Array = args.length > 2 && args[2] is Array ? args[2] as Array : [];
+                    var facade:Object = required(targets.facade, "game facade");
+                    facade.sendNotification.apply(facade, [String(args[1])].concat(notifyArgs));
+                    return null;
+            }
+            throw new Error("unknown direct action " + String(args[0]));
+        }
+
+        private static function traitNumber(trait:Object, name:String):Number
+        {
+            var value:* = nestedValue(trait, name, "value");
+            return value is Number ? Number(value) : 0;
+        }
+
+        // Signature check before use (InProcessPlayer checkMethodSignature): the
+        // method exists and accepts the argument count the action passes.
+        private static function accepts(target:Object, name:String, count:int):Boolean
+        {
+            if (target == null || !(member(target, name) is Function)) return false;
+            var type:String = getQualifiedClassName(target);
+            var methods:Object = _signatures[type];
+            if (methods == null) {
+                methods = {};
+                for each (var method:XML in describeType(target).method) {
+                    var total:int = method.parameter.length();
+                    var optional:int = method.parameter.(@optional == "true").length();
+                    methods[String(method.@name)] = [total - optional, total];
+                }
+                _signatures[type] = methods;
+            }
+            var range:Array = methods[name] as Array;
+            return range != null && count >= range[0] && count <= range[1];
+        }
+
+        private static function caps():Object
+        {
+            var targets:Object = null;
+            try { _direct = null; targets = directTargets(); } catch (ignored:Error) {}
+            var events:Object = targets == null ? null : targets.events;
+            var ships:Object = targets == null ? null : targets.ships;
+            var facade:Object = targets == null ? null : targets.facade;
+            return {
+                move: accepts(events, "moveHeroToCordinates", 2),
+                stop: accepts(events, "stopHero", 0),
+                collect: accepts(events, "moveHeroToCordinates", 3),
+                select: accepts(ships, "selectShip", 7),
+                deselect: accepts(ships, "deselectSelectedShip", 0),
+                notify: accepts(facade, "sendNotification", 1),
+                game_command: accepts(facade, "retrieveProxy", 1)
+            };
+        }
+
         private static function queueCall(id:String,target:String,method:String,args:String):String
         {
             if (_frameQueue.length >= 32 || _results[id] != null) return fail("frame queue full or duplicate ID");
@@ -1571,6 +1716,13 @@ package
             {
                 if (targetPath == "xenomit" && method == "gameCommand") return succeed(gameCommand(JSON.parse(jsonArgs)[0]));
                 if (targetPath == "xenomit" && method == "clientFeatures") return succeed(clientFeatures());
+                if (targetPath == "xenomit" && method == "direct")
+                {
+                    var directArgs:* = JSON.parse(jsonArgs);
+                    if (!(directArgs is Array)) return fail("arguments must be a JSON array");
+                    return succeed(direct(coerce(directArgs) as Array));
+                }
+                if (targetPath == "xenomit" && method == "caps") return succeed(caps());
                 if (targetPath == "xenomit" && method == "clientEvents")
                 {
                     var eventArgs:*=JSON.parse(jsonArgs);

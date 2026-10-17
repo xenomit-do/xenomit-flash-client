@@ -13,7 +13,8 @@ enum class NativeDiscovery { Auto, Anchor, Pattern, Parity };
 // STA-only decoder: never retains unrooted entity pointers between frames.
 class NativeState {
 public:
-    explicit NativeState(NativeDiscovery discovery=NativeDiscovery::Auto);
+    // named: publish as Local\xenomit_state_<pid> for out-of-process readers.
+    explicit NativeState(NativeDiscovery discovery=NativeDiscovery::Auto,bool named=true);
     ~NativeState();
     bool capture(const std::string& navigation, uint64_t navigation_at);
     void invalidate();
@@ -25,6 +26,8 @@ public:
     const char* root() const;
     uint64_t parity_checks() const;
     uint64_t parity_mismatches() const;
+    // The version 2 LiveFrame bytes (seqlock), or null if allocation failed.
+    const uint8_t* frame(size_t& size) const;
 private:
     struct Impl;
     std::unique_ptr<Impl> impl_;

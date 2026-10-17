@@ -97,4 +97,30 @@ std::string parse_response(const std::string &response) {
     return xml_unescape(response.substr(start + 1, close - start - 1));
 }
 
+std::vector<std::string> parse_arguments(const std::string &invoke) {
+    std::vector<std::string> args;
+    for (size_t at = invoke.find("<arguments>"); at != std::string::npos;) {
+        auto open = invoke.find('<', at + 1);
+        if (open == std::string::npos || invoke.compare(open, 12, "</arguments>") == 0) break;
+        auto end = invoke.find('>', open);
+        if (end == std::string::npos) break;
+        if (invoke.compare(open, 7, "<string") == 0 && invoke[end - 1] != '/') {
+            auto close = invoke.find("</string>", end);
+            if (close == std::string::npos) break;
+            args.push_back(xml_unescape(invoke.substr(end + 1, close - end - 1)));
+            at = close + 8;
+        } else if (invoke.compare(open, 7, "<number") == 0 && invoke[end - 1] != '/') {
+            auto close = invoke.find("</number>", end);
+            if (close == std::string::npos) break;
+            args.push_back(invoke.substr(end + 1, close - end - 1));
+            at = close + 8;
+        } else {
+            // Empty strings, null, undefined and other scalars.
+            args.push_back(std::string());
+            at = end;
+        }
+    }
+    return args;
+}
+
 }
