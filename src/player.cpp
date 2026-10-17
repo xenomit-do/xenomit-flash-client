@@ -24,6 +24,7 @@
 
 #include "swf_bridge.h"
 #include "native_state.h"
+#include "game_offsets.h"
 
 #import "Flash.ocx" raw_interfaces_only, raw_native_types, named_guids, no_smart_pointers, rename_namespace("Flash")
 
@@ -53,6 +54,9 @@ std::mutex g_cache_mutex;
 std::string g_snapshot;
 std::atomic<bool> g_native_mode{false};
 bool g_native_runtime_supported=false;
+// FlashVar gameclientHash of the running client; native offsets are generated per build.
+std::string g_game_client_hash;
+NativeDiscovery g_native_discovery=NativeDiscovery::Auto;
 bool g_hidden_draw_bootstrap=false;
 HDC g_bootstrap_dc=nullptr;
 HBITMAP g_bootstrap_bitmap=nullptr;
@@ -319,6 +323,16 @@ bool load_bridged_movie(const std::wstring &movie) {
 }
 
 
+// Empty when native capture may run; otherwise the reason it must not.
+std::string native_unavailable() {
+    namespace go=xenomit::game_offsets;
+    if(!g_native_runtime_supported) return "Native offsets require a pinned 34.0.0.267 runtime";
+    if(g_game_client_hash.empty()) return "Native offsets require the gameclientHash FlashVar of an authenticated launch";
+    if(g_game_client_hash!=go::kGameClientHash)
+        return "Native profile was generated for game build "+std::string(go::kGameClientHash)+" but "+g_game_client_hash+" is running; regenerate generated/game_offsets.h or select cached";
+    return {};
+}
+
 std::string call_on_ui(const std::string &name, const std::vector<std::string> &args) {
     if (!g_window || g_stopping.load()) return "ERR player shutting down\n";
     auto call = std::make_shared<BridgeCall>();
@@ -461,6 +475,7 @@ public:
         // and return undefined for unhandled browser-only calls.
         std::string answer="<undefined/>";
         if(xml.find("name=\"xenomitBackend\"")!=std::string::npos)answer=g_native_mode?"<string>native</string>":"<string>cached</string>";
+        if(xml.find("name=\"xenomitAnchor\"")!=std::string::npos && g_native)answer="<string>"+g_native->anchor_nonce()+"</string>";
         if (xml.find("location.href")!=std::string::npos)
             answer="<string>"+g_page_url+"</string>";
         auto wide=utf8_to_wide(answer);
@@ -513,9 +528,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
                     call->ok=true; call->parsed="visible="+call->args[0];
                 } else if (call->name=="hostBackend") {
                     const bool native=call->args[0]=="native";
-                    if(native && !g_native_runtime_supported) call->error="Native offsets require a pinned 34.0.0.267 runtime";
+                    auto unavailable=native ? native_unavailable() : std::string();
+                    if(!unavailable.empty()) call->error=unavailable;
                     else {
-                        if(native && !g_native) g_native=std::make_unique<NativeState>();
+                        if(native && !g_native) g_native=std::make_unique<NativeState>(g_native_discovery);
                         call->ok=flash_call("configureBackendAS",call->args,call->parsed,call->error);
                         if(call->ok && call->parsed==call->args[0]) {
                             g_native_mode=native;
@@ -554,13 +570,20 @@ bool finish_io(HANDLE pipe,OVERLAPPED &overlap,BOOL started,DWORD &bytes,DWORD t
     }
     return GetOverlappedResult(pipe,&overlap,&bytes,FALSE) != FALSE;
 }
+// Root and parity counters are written on the STA; a torn read only skews a diagnostic.
+std::string native_status() {
+    if(!g_native) return "";
+    return " native_root="+std::string(g_native->root())+" parity_checks="+std::to_string(g_native->parity_checks())+
+        " parity_mismatches="+std::to_string(g_native->parity_mismatches());
+}
+
 std::string process_command(const std::string &command) {
     if (command == "STATUS") {
         std::lock_guard<std::mutex> lock(g_cache_mutex);
         auto age=g_snapshot_at ? GetTickCount64()-g_snapshot_at : 999999;
         bool ready=g_game_ready.load() && age<=1000;
         return "OK player=1 bridge="+std::to_string(g_bridge_injected.load())+" ready="+std::to_string(ready)+
-            " native="+std::to_string(g_native_mode.load())+
+            " native="+std::to_string(g_native_mode.load())+native_status()+
             " bootstrap_draws="+std::to_string(g_bootstrap_draws.load())+" bootstrap_failures="+std::to_string(g_bootstrap_failures.load())+
             " frames="+std::to_string(g_frames.load())+" fps_milli="+std::to_string(g_metrics_at.load() && GetTickCount64()-g_metrics_at.load()<=1500 ? g_fps_milli.load() : 0)+
             " captures="+std::to_string(g_captures.load())+" capture_us_avg="+
@@ -744,13 +767,31 @@ int wmain() {
     if(options.count(L"--backend") && options[L"--backend"]!=L"native" && options[L"--backend"]!=L"cached") {std::fprintf(stderr,"Unknown capture backend\n");return 2;}
     g_native_mode=options[L"--backend"]==L"native";
     g_native_runtime_supported=pinned_native_runtime(options[L"--flash"]);
+    if(options.count(L"--native-discovery")) {
+        const auto &d=options[L"--native-discovery"];
+        if(d==L"auto")g_native_discovery=NativeDiscovery::Auto;
+        else if(d==L"anchor")g_native_discovery=NativeDiscovery::Anchor;
+        else if(d==L"pattern")g_native_discovery=NativeDiscovery::Pattern;
+        else if(d==L"parity")g_native_discovery=NativeDiscovery::Parity;
+        else {std::fprintf(stderr,"Native discovery must be auto, anchor, pattern or parity\n");return 2;}
+    }
+    if(options.count(L"--vars")) {
+        auto vars=wide_to_utf8(options[L"--vars"].c_str(),static_cast<int>(options[L"--vars"].size()));
+        for(size_t at=0;at<=vars.size();) {
+            auto next=vars.find('&',at);if(next==std::string::npos)next=vars.size();
+            auto pair=vars.substr(at,next-at);
+            if(pair.rfind("gameclientHash=",0)==0)g_game_client_hash=pair.substr(15);
+            at=next+1;
+        }
+    }
     if(options.count(L"--hidden-bootstrap")) {
         if(options[L"--hidden-bootstrap"]!=L"draw") {std::fprintf(stderr,"Hidden bootstrap must be draw\n");return 2;}
         g_hidden_draw_bootstrap=true;
     }
     if(g_native_mode) {
-        if(!g_native_runtime_supported) {std::fprintf(stderr,"Native offsets require a pinned 34.0.0.267 runtime; select cached for other OCX files\n");return 2;}
-        g_native=std::make_unique<NativeState>();
+        auto unavailable=native_unavailable();
+        if(!unavailable.empty()) {std::fprintf(stderr,"%s\n",unavailable.c_str());return 2;}
+        g_native=std::make_unique<NativeState>(g_native_discovery);
     }
     // Explicit HighQoS and timer-resolution opt-out prevent hidden-window
     // power heuristics from defeating the 1 ms multimedia timer request.

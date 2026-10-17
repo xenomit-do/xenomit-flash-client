@@ -33,7 +33,7 @@ The bot adds `autoStartEnabled=1` and `display2d=2` to FlashVars. If either supp
 
 For a real authenticated session, use the same `--launch-stdin` contract from a trusted parent process. The player reads all six records before initializing the OCX. Keep the SID and FlashVars out of command-line arguments, checked-in scripts, and logs.
 
-For a local movie, pass its path with `--movie`. Common optional arguments are `--url`, `--width`, `--height`, `--backend cached|native`, `--flash`, `--hidden`, and `--hidden-bootstrap draw`. The default OCX path is `Flash.ocx` beside the executable. The player rejects startup when `--movie` is absent.
+For a local movie, pass its path with `--movie`. Common optional arguments are `--url`, `--width`, `--height`, `--backend cached|native`, `--native-discovery auto|anchor|pattern|parity`, `--flash`, `--hidden`, and `--hidden-bootstrap draw`. The default OCX path is `Flash.ocx` beside the executable. The player rejects startup when `--movie` is absent.
 
 ### Host initialization
 
@@ -98,6 +98,36 @@ The bot passes `--backend cached` or `--backend native`.
 - Cached mode asks the ActionScript bridge for snapshots and avoids version-specific AVM offsets.
 - Native mode schedules version-specific AVM reads from `ENTER_FRAME` and publishes the version 2 shared-memory frame. It requires the supported runtime fingerprint and game class/method profile; unsupported profiles fail closed.
 - Navigation, portals, catalog, and inventory continue through supplementary ActionScript observations in both modes.
+
+### Native offset profile
+
+Native mode reads AVM slots at offsets that change with every game client build. They are not written by hand: `xenomit-tooling-offset-updater` resolves them from the deployed `main.swf` and writes `generated/game_offsets.h` (constants), `generated/game_offsets.json` (the profile the next run diffs against), `docs/OFFSETS_CHANGELOG.md` and `docs/offset-reports/`. Offsets that remain literal in `src/native_state.cpp` are Flash runtime internals pinned by the OCX hash.
+
+Native capture is refused unless both hold:
+
+- `Flash.ocx` matches the pinned runtime.
+- The launch's `gameclientHash` FlashVar equals `kGameClientHash`.
+
+A refused `--backend native` launch exits with code 2. A refused `BACKEND native` command returns an error naming both builds. Select cached capture, or regenerate the header and rebuild.
+
+### Root discovery
+
+The host gives the bridge a random per-session nonce through the `xenomitAnchor` callback. The bridge keeps one `NativeAnchor` object holding the nonce (`tag0`/`tag1`) and `ScreenManager.getInstance()` (`screen`). The host scans for the nonce, then requires all of the following:
+
+- The object's class name is `NativeAnchor`.
+- `screen` is a `ScreenManager`.
+- The generated method fingerprints match.
+
+The legacy alternative is the MainClientApplication value pattern from the header. `--native-discovery` selects:
+
+| Value | Behaviour |
+| --- | --- |
+| `auto` (default) | anchor; pattern only after a full scan finds no anchor |
+| `anchor` | anchor only |
+| `pattern` | legacy pattern only |
+| `parity` | both required; every capture checks they resolve the same ScreenManager and fails the frame on mismatch |
+
+`STATUS` reports `native_root`, `parity_checks` and `parity_mismatches`. Run parity across login, map changes, death/revive and relogin before retiring the pattern.
 
 In cached mode, entity capture normally runs every 150 ms, navigation refreshes about every 300 ms, and inventory refreshes every second. Native capture runs on the Flash thread; the pipe worker reads only the host's published state. Changing the backend resets stale capture state without restarting the game process.
 

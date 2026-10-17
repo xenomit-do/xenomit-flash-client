@@ -53,6 +53,8 @@ package
         private static var _navObservedAt:Number=0;
         private static var _nativeMode:Boolean=false;
         private static var _backendConfigured:Boolean=false;
+        // Native discovery root; see NativeAnchor below and native_state.cpp.
+        private static var _anchor:NativeAnchor;
         private static var _captureLastMs:int=0;
         private static var _items:Object={};
         private static var _itemsAt:int=-1000;
@@ -213,6 +215,24 @@ package
         }
 
 
+        // The host scans for the anchor's per-session nonce instead of a
+        // game-value fingerprint. Only our own object is written; the
+        // ScreenManager reference comes from its public getInstance().
+        private static function plantAnchor():void
+        {
+            if (_anchor == null) {
+                var parts:Array = String(ExternalInterface.call("xenomitAnchor")).split(",");
+                if (parts.length != 2) return;
+                var anchor:NativeAnchor = new NativeAnchor();
+                anchor.tag0 = Number(parts[0]);
+                anchor.tag1 = Number(parts[1]);
+                if (isNaN(anchor.tag0) || isNaN(anchor.tag1)) return;
+                _anchor = anchor;
+            }
+            if (_anchor.screen == null || (_frames & 63) == 0)
+                _anchor.screen = resolvePath("net.bigpoint.darkorbit.managers.ScreenManager.getInstance()");
+        }
+
         private function tick(event:Event):void
         {
             // Timelines can recreate the injected sprite. Only the current
@@ -228,7 +248,10 @@ package
                 _nativeMode=backend=="native" || _pepperNativeMode;
                 _backendConfigured=true;
             }
-            if (!_pepperNativeMode && _nativeMode && _captureEnabled && ExternalInterface.available) ExternalInterface.call("xenomitNativeFrame");
+            if (!_pepperNativeMode && _nativeMode && _captureEnabled && ExternalInterface.available) {
+                try { plantAnchor(); } catch (ignoredAnchor:Error) {}
+                ExternalInterface.call("xenomitNativeFrame");
+            }
             if (stage != null && stage.frameRate != 60) stage.frameRate = 60;
             var now:int = getTimer();
             if (now - _fpsAt >= 1000) {
@@ -362,7 +385,7 @@ package
                 putNumber(heroFields,"uridium",member(hero,"uridiumAmount"));
                 putNumber(heroFields,"experience",member(hero,"experiencePoints"));
                 putNumber(heroFields,"honor",member(hero,"honorPoints"));
-                putNumber(heroFields,"localTargetId",member(settings,"localTargetId"));
+                putNumber(heroFields,"localTargetId",localTargetValue(settings));
                 n.entity_fields={};n.entity_fields[String(ship.id)]=heroFields;
             }
             var menu:Object=ship == null || !n.hero.owns_pet ? null : petGearMenu();
@@ -412,7 +435,7 @@ package
                     }
                 }
                 if (shape == null) n.geometry_ready=false;
-                else n.obstacles.push({id:e.id,name:String(member(e,"zoneId") || "No-access zone"),shape:shape,inverted:member(e,"inverted") === true});
+                else n.obstacles.push({id:e.id,name:String(member(e,"zoneId") || "No-access zone"),kind:"no_access",shape:shape,inverted:member(e,"inverted") === true});
             }
             return n;
         }
@@ -1096,6 +1119,20 @@ package
                     var repairEvent:Class=resolvePath("net.bigpoint.darkorbit.gui.windows.components.repair.RepairEvent") as Class;
                     if (repairEvent==null) throw new Error("Repair event unavailable");
                     offer.window.dispatchEvent(new repairEvent("REPAIR"));return null;
+                case "revive_at":
+                    if (String(command.location)!="base") throw new Error("This client only automates an offered free base repair");
+                    var baseOffer:Object=freeRepair();
+                    if (baseOffer==null || baseOffer.type!=int(command.repair_type)) throw new Error("Automatic revive requires an offered, cooldown-free, free base repair");
+                    baseOffer.button.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+                    var baseRepairEvent:Class=resolvePath("net.bigpoint.darkorbit.gui.windows.components.repair.RepairEvent") as Class;
+                    if (baseRepairEvent==null) throw new Error("Repair event unavailable");
+                    baseOffer.window.dispatchEvent(new baseRepairEvent("REPAIR"));return null;
+                case "repair_drones":
+                case "invite_group_member":
+                case "leave_group":
+                case "kick_group_member":
+                case "set_group_invites":
+                    throw new Error("This manager operation is unavailable in the Flash bridge");
                 case "select_gate_difficulty":
                     selectGateDifficulty(command,resolvePath("net.bigpoint.darkorbit.gui.GuiManager.instance")); return null;
                 case "spin_galaxy_gate":
@@ -1727,7 +1764,7 @@ package
                             putNumber(fields,"uridium",member(heroClass,"uridiumAmount"));
                             putNumber(fields,"experience",member(heroClass,"experiencePoints"));
                             putNumber(fields,"honor",member(heroClass,"honorPoints"));
-                            putNumber(fields,"localTargetId",member(resolvePath("net.bigpoint.darkorbit.settings.Settings"),"localTargetId"));
+                            putNumber(fields,"localTargetId",localTargetValue(resolvePath("net.bigpoint.darkorbit.settings.Settings")));
                         }
                         putNumber(fields,"speed",nestedValue(member(entity,"moveTrait"),"speed","value"));
                         fields.isValid = member(entity,"container") != null;
@@ -1973,12 +2010,58 @@ package
             return member(member(value, first), second);
         }
 
+        // Settings.localTargetId is a plain Number on some builds and a
+        // property wrapper (`.value`) on others; unwrap either.
+        private static function localTargetValue(settings:Object):*
+        {
+            // `localTargetId` was removed from current builds; the selection
+            // now lives under selectedTarget/lockedTarget (a Number, a
+            // bindable `.value`, or the target ship itself).
+            // The game's own selection lives on the map's ShipManager, set the
+            // moment a ship is clicked (before any attack starts).
+            try {
+                var screen:Object = resolvePath("net.bigpoint.darkorbit.managers.ScreenManager.getInstance()");
+                var shipManager:Object = callMethod(member(screen, "map"), "getShipManager");
+                var selected:Object = callMethod(shipManager, "getSelectedShip");
+                var selectedId:* = member(selected, "id");
+                if (selectedId is Number && Number(selectedId) > 0) return selectedId;
+            } catch (selectionError:Error) {}
+            var names:Array = ["localTargetId", "selectedTarget", "lockedTarget", "targetId"];
+            for each (var name:String in names) {
+                var raw:* = member(settings, name);
+                if (raw == null) continue;
+                if (raw is Number) return raw;
+                var inner:* = member(raw, "value");
+                if (inner is Number) return inner;
+                if (inner != null) raw = inner;
+                var id:* = member(raw, "id");
+                if (id is Number) return id;
+            }
+            return null;
+        }
+
         private static function putNumber(target:Object, key:String, value:*):void
         {
             if (value is Number && !isNaN(Number(value)))
             {
                 target[key] = Number(value);
             }
+        }
+
+        private static function callMethod(target:Object, method:String):Object
+        {
+            var callable:* = member(target, method);
+            if (callable is Function)
+            {
+                try
+                {
+                    return (callable as Function).apply(target, []);
+                }
+                catch (error:Error)
+                {
+                }
+            }
+            return null;
         }
 
         private static function callBoolean(target:Object, method:String):Boolean
@@ -2139,3 +2222,14 @@ package
     }
 }
 
+/**
+ * Discovery root for native capture. The slot layout is fixed by the AVM
+ * (32-bit, then pointer, then Number slots): screen at +32, tag0 at +40 and
+ * tag1 at +48 on x64. native_state.cpp relies on this; keep the fields as is.
+ */
+final class NativeAnchor
+{
+    public var tag0:Number = 0;
+    public var tag1:Number = 0;
+    public var screen:Object = null;
+}
