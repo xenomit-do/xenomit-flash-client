@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "native_state.h"
 #include "game_offsets.h"
+#include "host.h"
 #include <array>
 #include <cmath>
 #include <cstdlib>
@@ -117,9 +118,11 @@ struct NativeState::Impl {
     uint32_t cost=0;const char* failure="native roots not discovered";const char* root="none";
     std::vector<uint8_t> scan_buffer=std::vector<uint8_t>(1024*1024);
     std::vector<Entity> records;std::string names,last_navigation;
-    explicit Impl(NativeDiscovery discovery):mode(discovery) {
+    Impl(NativeDiscovery discovery,bool named):mode(discovery) {
+        // Out-of-process readers open the named mapping; an in-process host
+        // hands the same frame to its caller through xf_live_frame.
         auto name=L"Local\\xenomit_state_"+std::to_wstring(GetCurrentProcessId());
-        mapping=CreateFileMappingW(INVALID_HANDLE_VALUE,nullptr,PAGE_READWRITE,0,MappingBytes,name.c_str());
+        mapping=CreateFileMappingW(INVALID_HANDLE_VALUE,nullptr,PAGE_READWRITE,0,MappingBytes,named?name.c_str():nullptr);
         if(mapping)bytes=static_cast<uint8_t*>(MapViewOfFile(mapping,FILE_MAP_ALL_ACCESS,0,0,MappingBytes));
         records.reserve(Capacity);names.reserve(64*1024);
         // Integers in [2^52, 2^53): exact doubles, exact in decimal and as AS3
@@ -325,7 +328,7 @@ struct NativeState::Impl {
         MemoryBarrier();InterlockedIncrement(seq);failure="";return true;
     }
 };
-NativeState::NativeState(NativeDiscovery discovery):impl_(std::make_unique<Impl>(discovery)){}
+NativeState::NativeState(NativeDiscovery discovery,bool named):impl_(std::make_unique<Impl>(discovery,named)){}
 NativeState::~NativeState()=default;
 void NativeState::invalidate(){
     if(!impl_->bytes)return;
@@ -341,3 +344,34 @@ const std::string& NativeState::anchor_nonce()const{return impl_->nonce_text;}
 const char* NativeState::root()const{return impl_->root;}
 uint64_t NativeState::parity_checks()const{return impl_->parity_checks;}
 uint64_t NativeState::parity_mismatches()const{return impl_->parity_mismatches;}
+const uint8_t* NativeState::frame(size_t& size)const{size=impl_->bytes?MappingBytes:0;return impl_->bytes;}
+
+namespace xf {
+bool guarded_copy(void* to,uintptr_t from,size_t size){return copy(to,from,size);}
+// InProcessPlayer queryBytes ([B)J region filter: committed, private, exactly
+// PAGE_READWRITE, at most 32 MiB. Returns the first max matches in address order.
+size_t query_bytes(const uint8_t* pattern,const uint8_t* mask,size_t len,uint64_t* out,size_t max) {
+    if(!pattern||!len||len>4096||!max)return 0;
+    std::vector<uint8_t> buffer(1024*1024+len);size_t found=0;uintptr_t at=0x10000;
+    MEMORY_BASIC_INFORMATION mbi{};
+    while(found<max&&VirtualQuery(reinterpret_cast<void*>(at),&mbi,sizeof(mbi))) {
+        auto base=reinterpret_cast<uintptr_t>(mbi.BaseAddress),end=base+mbi.RegionSize;
+        if(end<=at)break;
+        if(mbi.State==MEM_COMMIT&&mbi.Type==MEM_PRIVATE&&mbi.Protect==PAGE_READWRITE&&mbi.RegionSize<=0x2000000) {
+            for(uintptr_t chunk=base;chunk<end&&found<max;) {
+                auto amount=std::min(static_cast<size_t>(end-chunk),buffer.size());
+                if(amount<len||!copy(buffer.data(),chunk,amount))break;
+                for(size_t i=0;i+len<=amount&&found<max;++i) {
+                    size_t k=0;
+                    for(;k<len;++k)if((buffer[i+k]^pattern[k])&(mask?mask[k]:0xff))break;
+                    if(k==len)out[found++]=chunk+i;
+                }
+                if(chunk+amount>=end)break;
+                chunk+=amount-(len-1);
+            }
+        }
+        at=end;
+    }
+    return found;
+}
+}

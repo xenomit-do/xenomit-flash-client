@@ -4,14 +4,15 @@ This guide covers player startup, the host-to-bot boundary, capture modes, and h
 
 ## Runtime components
 
-The player has four main parts:
+The player has five main parts:
 
-- The C++ host owns the Win32 window, Flash ActiveX instance, local named pipe, and single-threaded apartment (STA) message loop.
+- `xenomit_flash.dll` is the C++ host. It owns its own single-threaded apartment (STA) thread, which runs the Win32 window, the Flash ActiveX instance and the message loop. Its C ABI is in `include/xenomit_flash.h`.
+- `xenomit_flash_client.exe` is a thin out-of-process wrapper. It reads the stdin bootstrap, starts the DLL with the named LiveFrame mapping and the control pipe, and waits.
 - `Flash.ocx` renders the game movie inside a system ATL ActiveX container.
-- `DobotBridge.as` is injected into the movie. It exposes reflection calls and game observations through `ExternalInterface`.
-- The sibling `xenomit-game-api` adapter speaks the pipe protocol and translates replies into `GameClient` snapshots and commands.
+- `DobotBridge.as` is injected into the movie. It exposes reflection calls, direct actions and game observations through `ExternalInterface`.
+- The sibling `xenomit-game-api` crate does one of two things. It loads the DLL in-process (`FlashInProcClient`), or it speaks the pipe protocol to the exe (`FlashClient`, `FlashNativeClient`).
 
-All Flash and COM calls run on the player UI thread. The pipe worker performs bounded I/O and posts requests to that thread; it never calls COM directly. Frame-bound calls enter a bounded FIFO and execute one at a time on `ENTER_FRAME`. The host returns the ActionScript result or error rather than treating submission as success.
+All Flash and COM calls run on the host's STA thread. Exported functions and the pipe worker queue owned tasks to that thread (`src/task_queue.cpp`) and wait with a bound; they never call COM directly. Frame-bound calls enter a bounded FIFO that runs up to four calls, within 4 ms, per `ENTER_FRAME`. The bridge pushes each result back with `xenomitResult`. The host returns the ActionScript result or error; it never treats submission as success.
 
 ## Starting the player
 
@@ -33,13 +34,13 @@ The bot adds `autoStartEnabled=1` and `display2d=2` to FlashVars. If either supp
 
 For a real authenticated session, use the same `--launch-stdin` contract from a trusted parent process. The player reads all six records before initializing the OCX. Keep the SID and FlashVars out of command-line arguments, checked-in scripts, and logs.
 
-For a local movie, pass its path with `--movie`. Common optional arguments are `--url`, `--width`, `--height`, `--backend cached|native`, `--native-discovery auto|anchor|pattern|parity`, `--flash`, `--hidden`, and `--hidden-bootstrap draw`. The default OCX path is `Flash.ocx` beside the executable. The player rejects startup when `--movie` is absent.
+For a local movie, pass its path with `--movie`. Common optional arguments are `--url`, `--width`, `--height`, `--backend cached|native`, `--native-discovery auto|anchor|pattern|parity`, `--flash`, `--hidden`, and `--hidden-bootstrap draw`. The default OCX path is `Flash.ocx` beside the executable and DLL. Also accepted: `--max-fps 0-100`, `--local-proxy <port>`, `--clear-cache <substring>`, `--game-ports <list>`. The player rejects startup when `--movie` is absent.
 
 ### Host initialization
 
-1. Parse options and, for `--launch-stdin`, read the six bootstrap records.
-2. Resolve the OCX path; by default it is `Flash.ocx` in the executable directory.
-3. Call `OleInitialize` on the main thread to initialize its COM STA.
+1. Parse options and, for `--launch-stdin`, read the six bootstrap records (exe), or receive them in `XfConfig` (`xf_start`). The host then runs the remaining steps on its own STA thread.
+2. Resolve the OCX path; by default it is `Flash.ocx` beside `xenomit_flash.dll`.
+3. Call `OleInitialize` on the host thread to initialize its COM STA, and install the Detours hooks.
 4. Load the OCX with `LoadLibraryExW`, get `DllGetClassObject`, and instantiate Shockwave Flash through its class factory. This registration-free activation does not require global OCX registration.
 5. Create a Win32 top-level window and attach the COM object to the system ATL ActiveX container.
 6. Apply the page base URL, FlashVars, quality, and window mode.
@@ -49,6 +50,47 @@ For a local movie, pass its path with `--movie`. Common optional arguments are `
 
 The host and OCX must both be x64. Keep them side by side when using the default OCX path.
 
+## In-process host and InProcessPlayer parity
+
+DarkBot's InProcessPlayer.dll hosts Flash inside the bot's JVM and is driven through JNI. The in-process mode uses the same model with a C ABI for Rust. `xf_start` creates the host's STA thread and returns once the bridged movie is playing. After that:
+
+- Every export can be called from any thread.
+- `xf_status` and `xf_live_frame` never touch the Flash thread.
+- Sync calls wait on a bounded completion. With `XF_ASYNC`, a call returns a ticket that `xf_take_result` collects.
+
+Measured locally with the bridge movie at 60 fps, from Rust (`examples/flash_inproc_smoke.rs` in xenomit-game-api):
+
+| Operation | Pipe (old exe) | In-process |
+| --- | --- | --- |
+| status | 0.08 ms median, 10.6 ms p95 | 0.004 ms |
+| status while another thread runs frame calls | 18.9 ms median | 0.005 ms |
+| frame call (FINVOKE) | 19.1 ms median | 17.0 ms (one frame) |
+| immediate call (INVOKE) | n/a | 0.7 ms |
+
+Frame calls stay bound to the game frame in both modes. The gain is that status, LiveFrame and other calls no longer queue behind them.
+
+| Area | InProcessPlayer | This host |
+| --- | --- | --- |
+| Process model | DLL in the JVM, JNI | DLL in the bot process, C ABI; exe kept as an isolated fallback |
+| Dispatch | Variant tasks, ring queue, 1 s sync engine | Owned tasks, bounded queue, sync waits or async tickets |
+| Frame results | Future completed by the worker | `xenomitResult` push; `resultAS` polling is gone |
+| Direct actions | `moveShip`, `selectEntity`, `collectBox`, `useItem`, `refine`, `sendNotification`, `callMethod(addr, index)` | `xf_move`, `xf_select`, `xf_collect`, `xf_use_item`, `xf_refine`, `xf_notify` through the game's public managers; `xf_caps` checks signatures. No raw method-index invocation. |
+| Memory | Raw read/write/replace/query exposed to the bot | Guarded `xf_read` and `xf_query_bytes` only; hot state is the LiveFrame; no writes |
+| Input | Mouse via SendMessage, `keyClick`, `sendText`, `pasteText`, `setUserInput` | `xf_mouse`, `xf_key`, `xf_text`, `xf_paste`, `xf_set_user_input` |
+| Window | Position, size, client size, minimum size, minimized, visible, transparency, FPS, volume, quality | Same setters; FPS is clamped to 100 |
+| Flash config | Virtual `mms.cfg` and `settings.sol` through file hooks; GPU exports | Same, with our own payloads (no allow list, because the root movie is a local file); GPU exports on the exe |
+| Network | Read counters, port 5001 socket, blocking, local proxy, cache purge | Same, plus ages, byte counts, `WSARecv` and `closesocket` |
+| Lifecycle | `reload`, CPU, memory, `emptyWorkingSet` | `xf_reload`, status CPU and working set, `xf_trim`, restartable `xf_stop`/`xf_start` |
+| Not adopted | License checks, string obfuscation, retry loop, system Flash fallback | Pinned OCX, exit codes, system ATL container |
+
+Detours hooks are installed once, before the OCX loads, and cover OS APIs only:
+
+- `CreateFileW`, `ReadFile`, `GetFileSize(Ex)` and `CloseHandle` serve the virtual Flash configuration.
+- `InternetReadFile`, `InternetConnectW`, `HttpOpenRequestW` and `InternetOpenW` provide counters, blocking patterns and the local proxy.
+- Winsock `connect`, `recv`, `WSARecv` and `closesocket` track the game socket on `game_ports` (default 5001).
+
+STATUS and `xf_status` report `vfs_hits`, `net_reads`, `game_socket`, `game_recv`, `game_recv_bytes`, `game_recv_age_ms` and `blocked_requests`.
+
 ## Build the host
 
 From the repository root, run:
@@ -57,7 +99,7 @@ From the repository root, run:
 just build
 ~~~
 
-The Justfile is the normal entry point. On Windows it runs recipes with PowerShell 7 (`pwsh`) and invokes `scripts/build.ps1`; on Linux and macOS it uses Bash and invokes the matching `.sh` scripts. The host build is Windows-only because the player uses Win32, COM/ATL, MSVC's Flash type-library import, and the 64-bit Flash ActiveX runtime. The Unix `build.sh` entry point explains this limitation. The Windows script uses the x64 MSVC compiler with C++17, optimization, Windows SDK libraries, and the bundled miniz/LZMA sources. It verifies the SHA-256 of `runtime/Flash.ocx` and copies the OCX beside the executable in `build/`.
+The Justfile is the normal entry point. On Windows it runs recipes with PowerShell 7 (`pwsh`) and invokes `scripts/build.ps1`; on Linux and macOS it uses Bash and invokes the matching `.sh` scripts. The host build is Windows-only because the player uses Win32, COM/ATL, MSVC's Flash type-library import, and the 64-bit Flash ActiveX runtime. The Unix `build.sh` entry point explains this limitation. The Windows script uses the x64 MSVC compiler with C++17, optimization, Windows SDK libraries, and the bundled miniz, LZMA and Detours sources. It links `xenomit_flash.dll` (with its import library) and then the thin `xenomit_flash_client.exe` against it. It verifies the SHA-256 of `runtime/Flash.ocx` and copies the OCX and the C header into `build/`.
 
 A local package consists of `build/xenomit_flash_client.exe` and its matching `build/Flash.ocx`. The runtime binary and build products are not checked into Git. Keep `generated/bridge_abc.inc` and the `third_party/` compression sources because they are host build inputs.
 
@@ -145,11 +187,19 @@ The host creates one local message-mode pipe per process: `\\.\pipe\xenomit_flas
 | `REFERENCE` | Request a full ActionScript reference snapshot for controller-side parity diagnostics. |
 | `BACKEND` | Select cached or native capture. |
 | `CAPTURE`, `WINDOW`, `QUALITY` | Change capture, visibility, or render quality. |
+| `VERSION` | Host and C ABI version. |
+| `MOVE x y`, `STOP`, `SELECT id [1]`, `DESELECT`, `COLLECT id [x y]`, `USE item [1]`, `REFINE ore amount`, `NOTIFY<TAB>name<TAB>json` | Direct actions in the next frame. |
+| `CAPS` | Which direct actions resolved against the running game. |
+| `ASYNC <call>`, `RESULT <ticket>` | Queue a frame call and collect its result later. |
+| `KEY vk [down\|up\|click]`, `MOUSE move\|down\|up\|click x y`, `TEXT <text>`, `PASTE <text>`, `INPUT 0\|1` | Input to the Flash window; `INPUT 0` drops real input. |
+| `WINDOW pos\|size\|client\|minclient x y`, `WINDOW minimize\|alpha n`, `FPS n`, `VOLUME n` | Window and rendering control. |
+| `BLOCK<TAB>pattern...`, `BLOCK clear`, `CACHE <substring>` | Request blocking and URL-cache purge. |
+| `RELOAD`, `TRIM` | Reload the movie; trim the working set. |
 
-Arguments are tab-delimited; structured call arguments use JSON. This is an internal bot/client contract. Update the host and sibling adapter together when changing it.
+Arguments are tab- or space-delimited as shown; structured call arguments use JSON. The pipe is a text front end over the same exports (`xf_exchange` runs it in-process). This is an internal bot/client contract. Update the host and sibling adapter together when changing it. `scripts/pipe_smoke.ps1` drives a running exe host.
 
 ## Output layout
 
 - `runtime/Flash.ocx` is the local OCX input.
 - `generated/bridge_abc.inc` is the required compiled ActionScript payload.
-- `build/xenomit_flash_client.exe` and `build/Flash.ocx` are the local player package.
+- `build/xenomit_flash.dll`, `xenomit_flash.lib`, `xenomit_flash.h`, `xenomit_flash_client.exe` and `Flash.ocx` are the local player package.
